@@ -1,0 +1,63 @@
+qt_add_executable(cloud
+    src/action_handler.cpp
+    src/action_manager.cpp
+    src/action_manager_settings.cpp
+    src/application.cpp
+    src/configuration.cpp
+    src/file_index.cpp
+    src/file_manager.cpp
+    src/file_manager_settings.cpp
+    src/file_manager_statistics.cpp
+    src/file_manager_task.cpp
+    src/file_object.cpp
+    src/mailer.cpp
+    src/mailer_settings.cpp
+    src/main.cpp
+    src/process.cpp
+    src/process_manager.cpp
+    src/process_manager_settings.cpp
+    src/report_manager.cpp
+    src/report_manager_settings.cpp
+    src/service_settings.cpp
+    src/service_statistics.cpp
+    src/unix_signal_handler.cpp
+    src/user_manager.cpp
+    src/user_manager_settings.cpp
+
+    src/action_handler.h
+    src/action_manager.h
+    src/action_manager_settings.h
+    src/application.h
+    src/configuration.h
+    src/file_index.h
+    src/file_manager.h
+    src/file_manager_settings.h
+    src/file_manager_statistics.h
+    src/file_manager_task.h
+    src/file_object.h
+    src/mailer.h
+    src/mailer_settings.h
+    src/process.h
+    src/process_manager.h
+    src/process_manager_settings.h
+    src/report_manager.h
+    src/report_manager_settings.h
+    src/service_settings.h
+    src/service_statistics.h
+    src/unix_signal_handler.h
+    src/user_manager.h
+    src/user_manager_settings.h
+)
+
+add_dependencies(cloud range-base-lib range-cloud-lib)
+
+target_link_libraries(cloud
+    PRIVATE
+        Qt6::Core
+        Qt6::Concurrent
+        Qt6::Network
+        Qt6::HttpServer
+        common_defines
+        range-base-lib
+        range-cloud-lib
+)
