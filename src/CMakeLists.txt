@@ -18,7 +18,7 @@ endif()
 
 set(BUILD_SHARED_LIBS OFF)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Concurrent HttpServer Network LinguistTools)
+find_package(Qt6 6.8 REQUIRED COMPONENTS Core Concurrent HttpServer Network LinguistTools)
 qt_standard_project_setup()
 
 add_library(common_defines INTERFACE)
