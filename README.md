@@ -32,10 +32,7 @@ Following command will attempt to download and install all required packages, th
 ```
 sudo ./src/range-build-tools/prereqs.sh
 ```
-Next build directory needs to be created
-```
-mkdir build
-```
+_NOTE: In case your OS does not provide you with Qt version 6.8 or newer download and installit from [https://www.qt.io/download/](https://www.qt.io/download/)._
 ## Build
 ```
 cmake -S src -B build
