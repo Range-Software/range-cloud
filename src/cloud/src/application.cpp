@@ -566,10 +566,12 @@ void Application::actionResolved(const RCloudAction &action)
     RHttpMessage message = this->actionToMessageMap.value(action.getId()).toReply(action);
     if (this->publicHttpServer->containsServerHandlerId(message.getHandlerId()))
     {
+        RLogger::debug("[Application] Send public response.\n");
         this->publicHttpServer->sendMessageReply(message);
     }
     else if (this->privateHttpServer->containsServerHandlerId(message.getHandlerId()))
     {
+        RLogger::debug("[Application] Send private response.\n");
         this->privateHttpServer->sendMessageReply(message);
     }
     else
@@ -578,6 +580,7 @@ void Application::actionResolved(const RCloudAction &action)
         R_LOG_TRACE_OUT;
         return;
     }
+    RLogger::debug("[Application] Remove message from action map.\n");
     this->actionToMessageMap.remove(action.getId());
 
     // Postprocess stop action.
