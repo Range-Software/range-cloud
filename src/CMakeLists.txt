@@ -69,23 +69,7 @@ get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 
 set(_qt_deploy_dir "$<TARGET_FILE_DIR:${PROJECT_TARGET_NAME}>/qtlib")
 
-if(WIN32)
-    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-    set(DEPLOY_COMMAND
-        ${WINDEPLOYQT_EXECUTABLE}
-        $<TARGET_FILE:${PROJECT_TARGET_NAME}>
-        --dir ${_qt_deploy_dir}
-    )
-elseif(APPLE)
-    find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
-    set(DEPLOY_COMMAND
-        ${MACDEPLOYQT_EXECUTABLE}
-        $<TARGET_BUNDLE_DIR:${PROJECT_TARGET_NAME}>
-    )
-    if(DEFINED APPLE_ID)
-        set(DEPLOY_COMMAND ${DEPLOY_COMMAND} -codesign=${APPLE_ID})
-    endif()
-else()
+if(UNIX AND NOT APPLE)
     get_filename_component(_qt_dir "${_qt_bin_dir}" DIRECTORY)
     set(DEPLOY_COMMAND
         ${CMAKE_SOURCE_DIR}/range-build-tools/linux_deploy_qt.sh
@@ -106,23 +90,7 @@ add_custom_target(deploy-qt ALL
 
 # Install ---------------------------------------------------------------------
 
-if(WIN32)
-    install(TARGETS cloud DESTINATION bin COMPONENT Application)
-    install(TARGETS cloud-tool DESTINATION bin COMPONENT Application)
-    install(DIRECTORY range-ca/ DESTINATION range-ca COMPONENT Application)
-    install(DIRECTORY ${PROJECT_TARGET_NAME}/doc/ DESTINATION doc COMPONENT Application)
-    install(DIRECTORY ${PROJECT_TARGET_NAME}/processes/ DESTINATION processes COMPONENT Application)
-    install(DIRECTORY ${PROJECT_TARGET_NAME}/scripts/ DESTINATION scripts COMPONENT Application)
-    install(DIRECTORY ${_qt_deploy_dir}/ DESTINATION bin COMPONENT Application)
-    install(FILES ${CMAKE_BINARY_DIR}/LICENSE.txt DESTINATION doc COMPONENT Application)
-elseif(APPLE)
-    install(TARGETS cloud BUNDLE DESTINATION . COMPONENT Application)
-#    install(TARGETS cloud-tool BUNDLE DESTINATION bin COMPONENT Application)
-    install(DIRECTORY ${PROJECT_TARGET_NAME}/help/ DESTINATION $<TARGET_BUNDLE_DIR_NAME:${PROJECT_TARGET_NAME}>/Contents/Resources/help)
-    install(DIRECTORY ${PROJECT_TARGET_NAME}/doc/ DESTINATION $<TARGET_BUNDLE_DIR_NAME:${PROJECT_TARGET_NAME}>/Contents/Resources/doc)
-    install(DIRECTORY ${PROJECT_TARGET_NAME}/etc/ DESTINATION $<TARGET_BUNDLE_DIR_NAME:${PROJECT_TARGET_NAME}>/Contents/Resources/etc)
-    install(FILES ${CMAKE_BINARY_DIR}/LICENSE.txt DESTINATION doc COMPONENT Application)
-else()
+if(UNIX AND NOT APPLE)
     set(CMAKE_INSTALL_PREFIX "/opt/${PROJECT_FAMILY_NAME}/${PROJECT_SHORT_REL_NAME}" CACHE PATH "Install path prefix" FORCE)
 
     install(TARGETS cloud DESTINATION bin COMPONENT Application)
@@ -150,14 +118,14 @@ set(CPACK_PACKAGE_HOMEPAGE_URL "${PROJECT_WWW}")
 set(CPACK_SYSTEM_NAME "${CMAKE_HOST_SYSTEM_NAME}")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 
-if(APPLE)
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_BINARY_DIR}/LICENSE.rtf")
-else()
+if(UNIX AND NOT APPLE)
     set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_BINARY_DIR}/LICENSE.txt")
 endif()
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/../README.md")
 
-set(CPACK_GENERATOR "ZIP;TGZ;STGZ;DEB;RPM")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CPACK_GENERATOR "ZIP;TGZ;STGZ;DEB;RPM")
+endif()
 
 # DEB
 set(CPACK_DEBIAN_PACKAGE_SECTION "utils")

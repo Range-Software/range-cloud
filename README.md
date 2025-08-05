@@ -35,17 +35,17 @@ sudo ./src/range-build-tools/prereqs.sh
 _NOTE: In case your OS does not provide you with Qt version 6.8 or newer download and install it from [https://www.qt.io/download/](https://www.qt.io/download/)._
 ## Build
 ```
-cmake -S src -B build
-cmake --build build --parallel
+cmake -S src -B build-Release && \
+cmake --build build-Release --parallel
 ```
 ## Install
 ```
-cmake --install build --prefix <install-dir>
+cmake --install build-Release --prefix <install-dir>
 ```
 Where `<install-dir>` is a directory where software binaries and deployment script and configuration will be installed.
 ## Create an installation packages and installers (optional)
 ```
-cmake --build build --target package
+cmake --build build-Release --target package
 ```
 
 ## Cloud as a background process
