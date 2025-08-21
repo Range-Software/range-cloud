@@ -53,11 +53,6 @@ add_dependencies(cloud range-base-lib range-cloud-lib)
 
 target_link_libraries(cloud
     PRIVATE
-        Qt6::Core
-        Qt6::Concurrent
-        Qt6::Network
-        Qt6::HttpServer
-        common_defines
-        range-base-lib
         range-cloud-lib
+        common_defines
 )
