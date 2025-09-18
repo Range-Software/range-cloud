@@ -201,11 +201,6 @@ do
     shift
 done
 
-if [ -d "$cloudDir" ]
-then
-    cloudDir=$(realpath "$cloudDir")
-fi
-
 assert_nonempty "$cloudDir" "Path to Cloud directory not specified"
 assert_nonempty "$rangeCaDir" "Path to Range CA not specified"
 assert_nonempty "$keyCommonName" "Common name not specified"
@@ -217,15 +212,25 @@ assert_nonempty "$keyOrganizationUnit" "Organization unit not specified"
 assert_port "$publicHttpPort" "Not a valid port number \"$publicHttpPort\""
 assert_port "$privateHttpPort" "Not a valid port number \"$privateHttpPort\""
 
+if [ -d "$cloudDir" ]
+then
+    cloudDir=$(realpath "$cloudDir")
+fi
+
 if [ "$cloudDir" != "$cloudPackageDir" ]
 then
     dstBinDir="$cloudDir/bin"
     dstScriptsDir="$cloudDir/scripts"
     dstProcessesDir="$cloudDir/processes"
 
-    mkdir -pv "$dstBinDir" && cp -v "$binDir/"* "$dstBinDir/" && \
-    mkdir -pv "$dstProcessesDir" && cp -v "$processesDir/"* "$dstProcessesDir/" && \
-    mkdir -pv "$dstScriptsDir" && cp -v "$scriptsDir/cloud_start.sh" "$dstScriptsDir/" && cp -v "$scriptsDir/cloud_stop.sh" "$dstScriptsDir/"
+    mkdir -pv "$dstBinDir" && \
+    cp -v "$binDir/"* "$dstBinDir/" && \
+    mkdir -pv "$dstScriptsDir" && \
+    cp -v "$scriptsDir/cloud_start.sh" "$dstScriptsDir/" && \
+    cp -v "$scriptsDir/cloud_stop.sh" "$dstScriptsDir/" && \
+    cp -v "$scriptsDir/cloud_status.sh" "$dstScriptsDir/" && \
+    mkdir -pv "$dstProcessesDir" && \
+    cp -v "$processesDir/"* "$dstProcessesDir/"
     assert_success $? "Failed to prepare Cloud directory: \"$cloudDir\""
 
     # Linux specific directories

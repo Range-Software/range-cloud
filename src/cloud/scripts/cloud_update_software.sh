@@ -82,12 +82,14 @@ then
     dstScriptsDir="$cloudDir/scripts"
     dstProcessesDir="$cloudDir/processes"
 
-    mkdir -pv "$dstBinDir" && cp -v "$binDir/"* "$dstBinDir/" && \
+    mkdir -pv "$dstBinDir" && \
+    cp -v "$binDir/"* "$dstBinDir/" && \
     mkdir -pv "$dstScriptsDir" && \
     cp -v "$scriptsDir/cloud_start.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_stop.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_status.sh" "$dstScriptsDir/" && \
-    mkdir -pv "$dstProcessesDir" && cp -v "$processesDir/"* "$dstProcessesDir/"
+    mkdir -pv "$dstProcessesDir" && \
+    cp -v "$processesDir/"* "$dstProcessesDir/"
     assert_success $? "Failed to prepare Cloud directory: \"$cloudDir\""
 
     # Linux specific directories
