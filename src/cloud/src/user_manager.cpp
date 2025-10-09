@@ -359,7 +359,7 @@ void UserManager::addToken(const RAuthToken &token)
     this->tokens.append(token);
 
     emit this->changed();
-    emit this->tokenRemoved(this->tokens.last());
+    emit this->tokenAdded(this->tokens.last());
 }
 
 void UserManager::removeToken(const QUuid &id)

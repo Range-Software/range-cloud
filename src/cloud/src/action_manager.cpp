@@ -71,6 +71,7 @@ ActionManager::ActionManager(const ActionManagerSettings &settings, QObject *par
             actionName == RCloudAction::Action::ListFiles::key ||
             actionName == RCloudAction::Action::FileInfo::key ||
             actionName == RCloudAction::Action::FileDownload::key ||
+            actionName == RCloudAction::Action::UserRegister::key ||
             actionName == RCloudAction::Action::Process::key ||
             actionName == RCloudAction::Action::SubmitReport::key)
         {

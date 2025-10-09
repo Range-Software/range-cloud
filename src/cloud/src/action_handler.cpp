@@ -378,6 +378,59 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
 
         emit this->resolved(resolvedAction);
     }
+    else if (action.getAction() == RCloudAction::Action::UserRegister::key)
+    {
+        RCloudAction resolvedAction(action);
+
+        try
+        {
+            RUserInfo userInfo(UserManager::createUser(action.getResourceName()));
+            this->userManager->addUser(userInfo);
+
+            RAuthToken authToken;
+            authToken.setResourceName(action.getResourceName());
+            authToken.setContent(RAuthToken::generateTokenContent());
+            authToken.setValidityDate(RAuthToken::validityMonthsFromNow(1));
+
+            this->userManager->addToken(authToken);
+            resolvedAction.setData(QJsonDocument(authToken.toJson()).toJson());
+            resolvedAction.setErrorType(RError::None);
+
+            QString message = QString("New authentication token has been crated.\n\nResource: %1\nToken: %2\nValidity: %3").arg(
+                authToken.getResourceName(),
+                authToken.getContent(),
+                QDateTime::fromSecsSinceEpoch(authToken.getValidityDate()).toString());
+            this->mailer->submitMail(authToken.getResourceName(),"Authentication token created", message);
+
+            QJsonArray jsonArray;
+            for (const RAuthToken &authToken : this->userManager->getTokens())
+            {
+                if (authToken.getResourceName() == action.getResourceName())
+                {
+                    jsonArray.append(authToken.toJson());
+                }
+            }
+
+            QJsonObject jsonObject;
+            jsonObject["user"] = userInfo.toJson();
+            jsonObject["tokens"] = jsonArray;
+
+            resolvedAction.setData(QJsonDocument(jsonObject).toJson());
+            resolvedAction.setErrorType(RError::None);
+        }
+        catch (const RError &error)
+        {
+            resolvedAction.setData(error.getMessage().toUtf8());
+            resolvedAction.setErrorType(error.getType());
+        }
+        catch (...)
+        {
+            resolvedAction.setData(RError::getTypeMessage(RError::Unknown).toUtf8());
+            resolvedAction.setErrorType(RError::Unknown);
+        }
+
+        emit this->resolved(resolvedAction);
+    }
     else if (action.getAction() == RCloudAction::Action::ListUserTokens::key)
     {
         RCloudAction resolvedAction(action);

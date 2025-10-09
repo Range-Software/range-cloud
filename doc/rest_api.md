@@ -317,6 +317,31 @@ GET https://<host>:<port>/user-remove?resource-name=<user-name>
 <empty>
 ```
 
+### Register user
+```
+GET https://<host>:<port>/user-register?resource-name=<user-name>
+```
+**Body:**
+```
+{
+    "user": {
+        "name": "<user-name>",
+        "groups": [
+            "<group-name-1>",
+            "<group-name-2>"
+        ]
+    },
+    "tokens": [
+        {
+            "content": "<token>",
+            "id": "<uuid>",
+            "resource": "<user-name>",
+            "validity": "<timestamp>"
+        }
+    ]
+}
+```
+
 ---
 
 ## Group management

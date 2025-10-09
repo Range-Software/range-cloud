@@ -280,6 +280,12 @@ void Application::onStarted()
             this->toolInput.addAction(RCloudToolAction::requestUserRemove(this->httpClient, userName, authUser, authToken));
         }
 
+        if (argumentsParser.isSet(RCloudAction::Action::UserRegister::key))
+        {
+            QString userName = argumentsParser.getValue(RCloudAction::Resource::Name::key).toString();
+            this->toolInput.addAction(RCloudToolAction::requestUserRegister(this->httpClient, userName, authUser, authToken));
+        }
+
         if (argumentsParser.isSet(RCloudAction::Action::ListUserTokens::key))
         {
             QString userName = argumentsParser.getValue(RCloudAction::Resource::Name::key).toString();
