@@ -22,9 +22,9 @@ jobs:
           version: '6.10.0'   # >= 6.8 as required
           host: 'linux'
           target: 'desktop'
-          arch: 'gcc_64'
+          arch: 'linux_gcc_64'
           cache: true        # speed up subsequent runs
-          # If you need extra Qt modules, add: modules: 'qt5compat qtshadertools ...'
+          modules: 'qthttpserver'
 
       - name: Show Qt version (sanity)
         run: |
