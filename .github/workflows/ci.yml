@@ -24,7 +24,7 @@ jobs:
           target: 'desktop'
           arch: 'linux_gcc_64'
           cache: true        # speed up subsequent runs
-          modules: 'qthttpserver qwebsockets'
+          modules: 'qthttpserver qtwebsockets'
 
       - name: Show Qt version (sanity)
         run: |
