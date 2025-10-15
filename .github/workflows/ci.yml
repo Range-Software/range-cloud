@@ -119,5 +119,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: range-cloud-${{ matrix.os }}-${{ matrix.arch }}-packages
-          path: ${{ matrix.pkg_glob }}
-          if-no-files-found: warn
+          path: |
+            build-Release/*.deb
+            build-Release/*.rpm
+            build-Release/*.sh
+            build-Release/*.run
+            build-Release/*.zip
+            build-Release/*.tar.gz
+            build-Release/*.dmg
+            build-Release/*.run
+          if-no-files-found: error
