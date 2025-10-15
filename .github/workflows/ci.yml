@@ -1,0 +1,62 @@
+name: CI (Linux)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install Qt 6.8 (desktop)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'   # >= 6.8 as required
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          cache: true        # speed up subsequent runs
+          # If you need extra Qt modules, add: modules: 'qt5compat qtshadertools ...'
+
+      - name: Show Qt version (sanity)
+        run: |
+          qmake -v || true
+          cmake --version
+
+      - name: Install build prerequisites (repo script)
+        run: |
+          sudo bash ./src/range-build-tools/prereqs.sh
+
+      - name: Configure (Release)
+        run: |
+          cmake -S src -B build-Release -G Ninja
+
+      - name: Build
+        run: |
+          cmake --build build-Release --parallel
+
+      - name: (Optional) Package
+        run: |
+          cmake --build build-Release --target package
+        continue-on-error: true  # let CI pass even if packaging is optional
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: range-cloud-linux-bin
+          path: |
+            build-Release/bin/**
+            build-Release/*.deb
+            build-Release/*.rpm
+            build-Release/*.sh
+            build-Release/*.run
+          if-no-files-found: warn
+
