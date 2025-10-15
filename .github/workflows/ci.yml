@@ -31,10 +31,6 @@ jobs:
           qmake -v || true
           cmake --version
 
-      - name: Install build prerequisites (repo script)
-        run: |
-          sudo bash ./src/range-build-tools/prereqs.sh
-
       - name: Configure (Release)
         run: |
           cmake -S src -B build-Release -G Ninja
