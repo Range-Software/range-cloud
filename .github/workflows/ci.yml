@@ -39,15 +39,14 @@ jobs:
         run: |
           cmake --build build-Release --parallel
 
-      - name: (Optional) Package
+      - name: Build Package
         run: |
-          cmake --build build-Release --target package
-        continue-on-error: true  # let CI pass even if packaging is optional
-
-      - name: Upload binaries
+          cmake --build build-Release --parallel --target package
+      
+      - name: Upload packages (matrix)
         uses: actions/upload-artifact@v4
         with:
-          name: range-cloud-linux-bin
+          name: range-cloud-${{ matrix.os }}-${{ matrix.arch }}-packages
           path: |
             build-Release/bin/**
             build-Release/*.deb
