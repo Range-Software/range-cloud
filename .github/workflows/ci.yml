@@ -15,17 +15,10 @@ jobs:
             arch: x86_64
             qt_host: linux
             qt_arch: linux_gcc_64
-            pkg_glob: build-Release/*.{deb,rpm,sh,run,zip,tar.gz,tar.xz}
           - os: macos-26
             arch: arm64
             qt_host: mac
             qt_arch: clang_64
-            pkg_glob: build-Release/*.{dmg,pkg,zip,tar.gz,tar.xz}
-          #- os: windows-latest
-          #  arch: x64
-          #  qt_host: windows
-          #  qt_arch: win64_msvc2022_64
-          #  pkg_glob: build-Release/*.{msi,exe,zip}
 
     runs-on: ${{ matrix.os }}
 
@@ -48,15 +41,6 @@ jobs:
           brew update
           brew install ninja || true
 
-      #- name: Set up MSVC (Windows)
-      #  if: matrix.os == 'windows-latest'
-      #  uses: ilammy/msvc-dev-cmd@v1
-      
-      #- name: Ensure Ninja (Windows)
-      #  if: matrix.os == 'windows-latest'
-      #  run: choco install ninja -y || echo "Ninja already present"
-      #  shell: pwsh
-
       # Qt
       - name: Install Qt 6.10.0
         uses: jurplel/install-qt-action@v4
@@ -75,32 +59,15 @@ jobs:
           cmake --version
           qmake -v || true
 
-      #- name: Show versions (Windows)
-      #  if: matrix.os == 'windows-latest'
-      #  run: |
-      #    cmake --version
-      #    qmake -v || Write-Host "qmake not on PATH (ok)"
-      #  shell: pwsh
-
       # Configure
       - name: Configure (Unix)
         if: matrix.os != 'windows-latest'
-        run: cmake -S src -B build-Release -G Ninja
-
-      #- name: Configure (Windows)
-      #  if: matrix.os == 'windows-latest'
-      #  run: cmake -S src -B build-Release -G Ninja
-      #  shell: pwsh
+        run: cmake -S src -B build-Release -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       # Build
       - name: Build (Unix)
         if: matrix.os != 'windows-latest'
         run: cmake --build build-Release --parallel
-
-      #- name: Build (Windows)
-      #  if: matrix.os == 'windows-latest'
-      #  run: cmake --build build-Release --parallel
-      #  shell: pwsh
 
       # Package
       - name: CPack (Unix)
@@ -108,24 +75,17 @@ jobs:
         run: cmake --build build-Release --target package --parallel
         continue-on-error: true
 
-      #- name: CPack (Windows)
-      #  if: matrix.os == 'windows-latest'
-      #  run: cmake --build build-Release --target package --parallel
-      #  shell: pwsh
-      #  continue-on-error: true
-
       # Artifacts
       - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
-          name: range-cloud-${{ matrix.os }}-${{ matrix.arch }}-packages
+          name: ${{ github.event.repository.name }}-${{ matrix.os }}-${{ matrix.arch }}-packages
           path: |
-            build-Release/*.deb
-            build-Release/*.rpm
-            build-Release/*.sh
-            build-Release/*.run
-            build-Release/*.zip
-            build-Release/*.tar.gz
-            build-Release/*.dmg
-            build-Release/*.run
+            build-Release/${{ github.event.repository.name }}-*.deb
+            build-Release/${{ github.event.repository.name }}-*.rpm
+            build-Release/${{ github.event.repository.name }}-*.sh
+            build-Release/${{ github.event.repository.name }}-*.run
+            build-Release/${{ github.event.repository.name }}-*.zip
+            build-Release/${{ github.event.repository.name }}-*.tar.gz
+            build-Release/${{ github.event.repository.name }}-*.dmg
           if-no-files-found: error
