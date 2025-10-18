@@ -68,12 +68,24 @@ void Application::onStarted()
         validOptions.append(RArgumentOption("json-content",RArgumentOption::String,QVariant(),"Message content in Json format",RArgumentOption::File,false));
 
         validOptions.append(RArgumentOption("access-mode-mask-options",RArgumentOption::Switch,QVariant(),"Print access mode mask values",RArgumentOption::Help,false));
+        validOptions.append(RArgumentOption("print-actions",RArgumentOption::Switch,QVariant(),"Print url addresses",RArgumentOption::Help,false));
 
         RArgumentsParser argumentsParser(Application::arguments(),validOptions,false);
 
         if (argumentsParser.isSet("help"))
         {
             argumentsParser.printHelp();
+            this->exit(0);
+            R_LOG_TRACE_OUT;
+            return;
+        }
+        if (argumentsParser.isSet("print-actions"))
+        {
+            QMap<QString,QString> actionMap = RCloudAction::getActionMap();
+            for (auto iter = actionMap.cbegin(); iter != actionMap.cend(); ++iter)
+            {
+                RLogger::info("%-30s - %s\n",iter.key().toUtf8().constData(), iter.value().toUtf8().constData());
+            }
             this->exit(0);
             R_LOG_TRACE_OUT;
             return;
@@ -401,4 +413,3 @@ void Application::disconnect()
     this->httpClient->deleteLater();
     this->quit();
 }
-
