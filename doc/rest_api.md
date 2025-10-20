@@ -4,7 +4,7 @@
 
 ## Service
 
-### Test request
+### Send a test request (ping) to the cloud server
 ```
 POST https://<host>:<port>/test-request
 ```
@@ -12,8 +12,12 @@ POST https://<host>:<port>/test-request
 ```
 <Any text which will be part of the server response.>
 ```
+**Response:**
+```
+<Any text which will be part of the server response.>
+```
 
-### Service statistics
+### Cloud server statistics
 ```
 GET https://<host>:<port>/statistics
 ```
@@ -21,8 +25,59 @@ GET https://<host>:<port>/statistics
 ```
 <empty>
 ```
+**Response:**
+```
+{
+    "dateTime": {
+        "current": "<curent-date-time>",
+        "start": "<service-start-date-time>",
+        "upTime": "<up-time>"
+    },
+    "general": {
+        "version": "<service-software-version>"
+    },
+    "services": [
+        {
+            "index": {
+                "bytes": 0,
+                "files": {
+                    "average": 0,
+                    "maximum": 0,
+                    "median": 0,
+                    "minimum": 0,
+                    "p05": 0,
+                    "p95": 0,
+                    "size": 0
+                },
+                "size": 0
+            },
+            "name": "FileService"
+        },
+        {
+            "name": "ActionService",
+            "size": 35
+        },
+        {
+            "name": "ProcessService",
+            "size": 3
+        },
+        {
+            "name": "ReportService",
+            "reports": 0
+        },
+        {
+            "name": "UserService",
+            "users": 6
+        },
+        {
+            "name": "MailerService"
+        }
+    ]
+}
 
-### Stop service
+```
+
+### Stop the cloud server
 ```
 GET https://<host>:<port>/stop
 ```
@@ -30,18 +85,52 @@ GET https://<host>:<port>/stop
 ```
 <empty>
 ```
+**Response:**
+```
+<status-message>
+```
 
 ---
 
 ## File store
 
-### List files
+### List files on the cloud server
 ```
 GET https://<host>:<port>/list-files
 ```
 **Body:**
 ```
 <empty>
+```
+**Response:**
+```
+"files": [
+    {
+        "id": "<uid>",
+        "path": "<file-path>",
+        "size": "<bytes>",
+        "created": "<seconds-since-epoch>",
+        "updated": "<seconds-since-epoch>",
+        "version": "<version>",
+        "access": {
+            "mode": {
+                "user": <access-mode>,
+                "group": <access-mode>,
+                "other": <access-mode>
+            },
+            "owner": {
+                "user": "<owner-username>",
+                "group": "<owner-group>"
+            }
+        },
+        "tags": [
+            "<tag-1>",
+            "<tag-2>",
+            ...
+            "<tag-n>"
+        ]
+    }
+]
 ```
 
 ### Get file information
@@ -52,26 +141,110 @@ GET https://<host>:<port>/file-info?resource-id=<uid>
 ```
 <empty>
 ```
-
-### Upload file
+**Response:**
 ```
-PUT https://<host>:<port>/file-upload?resource-name=<resource-name>
+{
+    "id": "<uid>",
+    "path": "<file-path>",
+    "size": "<bytes>",
+    "created": "<seconds-since-epoch>",
+    "updated": "<seconds-since-epoch>",
+    "version": "<version>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    },
+    "tags": [
+        "<tag-1>",
+        "<tag-2>",
+        ...
+        "<tag-n>"
+    ]
+}
+```
+
+### Upload file to the cloud server
+```
+PUT https://<host>:<port>/file-upload?resource-name=<file-path>
 ```
 **Body:**
 ```
 <content of the file to be uploaded>
 ```
-
-### Update remote file
+**Response:**
 ```
-POST https://<host>:<port>/file-update?resource-id=<uid>&resource-name=<resource-name>
+{
+    "id": "<uid>",
+    "path": "<file-path>",
+    "size": "<bytes>",
+    "created": "<seconds-since-epoch>",
+    "updated": "<seconds-since-epoch>",
+    "version": "<version>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    },
+    "tags": [
+        "<tag-1>",
+        "<tag-2>",
+        ...
+        "<tag-n>"
+    ]
+}
+```
+
+### Update file on the cloud server
+```
+POST https://<host>:<port>/file-update?resource-id=<uid>&resource-name=<file-path>
 ```
 **Body:**
 ```
 <content of the file to be updated>
 ```
+**Response:**
+```
+{
+    "id": "<uid>",
+    "path": "<file-path>",
+    "size": "<bytes>",
+    "created": "<seconds-since-epoch>",
+    "updated": "<seconds-since-epoch>",
+    "version": "<version>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    },
+    "tags": [
+        "<tag-1>",
+        "<tag-2>",
+        ...
+        "<tag-n>"
+    ]
+}
+```
 
-### Update file access owner
+### Update file access owner on the cloud server
 ```
 POST https://<host>:<port>/file-update-access-owner?resource-id=<uid>
 ```
@@ -82,8 +255,36 @@ POST https://<host>:<port>/file-update-access-owner?resource-id=<uid>
     "group": "<owner-group>"
 }
 ```
+**Response:**
+```
+{
+    "id": "<uid>",
+    "path": "<file-path>",
+    "size": "<bytes>",
+    "created": "<seconds-since-epoch>",
+    "updated": "<seconds-since-epoch>",
+    "version": "<version>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    },
+    "tags": [
+        "<tag-1>",
+        "<tag-2>",
+        ...
+        "<tag-n>"
+    ]
+}
+```
 
-### Update file access mode
+### Update file access mode on the cloud server
 ```
 POST https://<host>:<port>/file-update-access-mode?resource-id=<uid>
 ```
@@ -106,7 +307,36 @@ POST https://<host>:<port>/file-update-access-mode?resource-id=<uid>
 * 6 = `rw-`
 * 7 = `rwx`
 
-### Update file version
+**Response:**
+```
+{
+    "id": "<uid>",
+    "path": "<file-path>",
+    "size": "<bytes>",
+    "created": "<seconds-since-epoch>",
+    "updated": "<seconds-since-epoch>",
+    "version": "<version>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    },
+    "tags": [
+        "<tag-1>",
+        "<tag-2>",
+        ...
+        "<tag-n>"
+    ]
+}
+```
+
+### Update file version on the cloud server
 ```
 POST https://<host>:<port>/file-update-version?resource-id=<uid>
 ```
@@ -114,18 +344,74 @@ POST https://<host>:<port>/file-update-version?resource-id=<uid>
 ```
 1.2.3
 ```
+**Response:**
+```
+{
+    "id": "<uid>",
+    "path": "<file-path>",
+    "size": "<bytes>",
+    "created": "<seconds-since-epoch>",
+    "updated": "<seconds-since-epoch>",
+    "version": "<version>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    },
+    "tags": [
+        "<tag-1>",
+        "<tag-2>",
+        ...
+        "<tag-n>"
+    ]
+}
+```
 
-### Update file tags
+### Update file tags on the cloud server
 
 ```
 POST https://<host>:<port>/file-update-tags?resource-id=<uid>
 ```
 **Body:**
 ```
-tag1,tag2,tag3
+<tag-1>,<tag-2>,...,<tag-n>
+```
+**Response:**
+```
+{
+    "id": "<uid>",
+    "path": "<file-path>",
+    "size": "<bytes>",
+    "created": "<seconds-since-epoch>",
+    "updated": "<seconds-since-epoch>",
+    "version": "<version>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    },
+    "tags": [
+        "<tag-1>",
+        "<tag-2>",
+        ...
+        "<tag-n>"
+    ]
+}
 ```
 
-### Download file
+### Download file from the cloud server
 ```
 GET https://<host>:<port>/file-download?resource-id=<uid>
 ```
@@ -133,8 +419,12 @@ GET https://<host>:<port>/file-download?resource-id=<uid>
 ```
 <empty>
 ```
+**Response:**
+```
+<content of the file to be uploaded>
+```
 
-### Remove file
+### Remove file from the cloud server
 ```
 GET https://<host>:<port>/file-remove?resource-id=<uid>
 ```
@@ -142,13 +432,17 @@ GET https://<host>:<port>/file-remove?resource-id=<uid>
 ```
 <empty>
 ```
+**Response:**
+```
+<uid>
+```
 
 ---
 
 ## Process
 
 
-### Run process
+### Start a cloud server process
 
 ```
 POST https://<host>:<port>/process
@@ -164,12 +458,16 @@ Following is an example of "hello-world" process.
     }
 }
 ```
+**Response:**
+```
+<process output>
+```
 
 ---
 
 ## Process management
 
-### List processes
+### List processes on the cloud server
 ```
 GET https://<host>:<port>/list-processes
 ```
@@ -177,8 +475,29 @@ GET https://<host>:<port>/list-processes
 ```
 <empty>
 ```
+**Response:**
+```
+"processes": [
+    {
+        "name": "<process-name>",
+        "executable": "<path-to-executable>",
+        "arguments": "<process-command-line-arguments>",
+        "access": {
+            "mode": {
+                "user": <access-mode>,
+                "group": <access-mode>,
+                "other": <access-mode>
+            },
+            "owner": {
+                "user": "<owner-username>",
+                "group": "<owner-group>"
+            }
+        }
+    }
+]
+```
 
-### Update process access owner
+### Update process access owner on the cloud server
 ```
 POST https://<host>:<port>/process-update-access-owner?resource-name=<resource-name>
 ```
@@ -189,8 +508,27 @@ POST https://<host>:<port>/process-update-access-owner?resource-name=<resource-n
     "group": "<owner-group>"
 }
 ```
+**Response:**
+```
+{
+    "name": "<process-name>",
+    "executable": "<path-to-executable>",
+    "arguments": "<process-command-line-arguments>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    }
+}
+```
 
-### Update process access mode
+### Update process access mode on the cloud server
 ```
 POST https://<host>:<port>/process-update-access-mode?resource-name=<resource-name>
 ```
@@ -213,11 +551,31 @@ POST https://<host>:<port>/process-update-access-mode?resource-name=<resource-na
 * 6 = `rw-`
 * 7 = `rwx`
 
+**Response:**
+```
+{
+    "name": "<process-name>",
+    "executable": "<path-to-executable>",
+    "arguments": "<process-command-line-arguments>",
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    }
+}
+```
+
 ---
 
 ## Action management
 
-### List actions
+### List actions on the cloud server
 ```
 GET https://<host>:<port>/list-actions
 ```
@@ -225,8 +583,27 @@ GET https://<host>:<port>/list-actions
 ```
 <empty>
 ```
+**Response:**
+```
+"actions": [
+    {
+        "name": "<action-name>".
+        "access": {
+            "mode": {
+                "user": <access-mode>,
+                "group": <access-mode>,
+                "other": <access-mode>
+            },
+            "owner": {
+                "user": "<owner-username>",
+                "group": "<owner-group>"
+            }
+        }
+    }
+]
+```
 
-### Update action access owner
+### Update action access owner on the cloud server
 ```
 POST https://<host>:<port>/action-update-access-owner?resource-name=<resource-name>
 ```
@@ -237,8 +614,25 @@ POST https://<host>:<port>/action-update-access-owner?resource-name=<resource-na
     "group": "<owner-group>"
 }
 ```
+**Response:**
+```
+{
+    "name": "<action-name>".
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    }
+}
+```
 
-### Update action access mode
+### Update action access mode on the cloud server
 ```
 POST https://<host>:<port>/action-update-access-mode?resource-name=<resource-name>
 ```
@@ -261,17 +655,49 @@ POST https://<host>:<port>/action-update-access-mode?resource-name=<resource-nam
 * 6 = `rw-`
 * 7 = `rwx`
 
+**Response:**
+```
+{
+    "name": "<action-name>".
+    "access": {
+        "mode": {
+            "user": <access-mode>,
+            "group": <access-mode>,
+            "other": <access-mode>
+        },
+        "owner": {
+            "user": "<owner-username>",
+            "group": "<owner-group>"
+        }
+    }
+}
+```
+
 ---
 
 ## User management
 
-### List users
+### List users on the cloud server
 ```
 GET https://<host>:<port>/list-users
 ```
 **Body:**
 ```
 <empty>
+```
+**Response:**
+```
+"users": [
+    {
+        "name": "<user-name>",
+        "groups": [
+            "<group-name-1>",
+            "<group-name-2>",
+            ...
+            "<group-name-n>"
+        ]
+    }
+]
 ```
 
 ### Get user information
@@ -282,8 +708,20 @@ GET https://<host>:<port>/user-info?resource-name=<user-name>
 ```
 <empty>
 ```
+**Response:**
+```
+{
+    "name": "<user-name>",
+    "groups": [
+        "<group-name-1>",
+        "<group-name-2>",
+        ...
+        "<group-name-n>"
+    ]
+}
+```
 
-### Add user
+### Add new user
 ```
 GET https://<host>:<port>/user-add?resource-name=<user-name>
 ```
@@ -291,8 +729,20 @@ GET https://<host>:<port>/user-add?resource-name=<user-name>
 ```
 <empty>
 ```
+**Response:**
+```
+{
+    "name": "<user-name>",
+    "groups": [
+        "<group-name-1>",
+        "<group-name-2>",
+        ...
+        "<group-name-n>"
+    ]
+}
+```
 
-### Update user
+### Update existing user
 ```
 POST https://<host>:<port>/user-update?resource-name=<user-name>
 ```
@@ -302,13 +752,27 @@ POST https://<host>:<port>/user-update?resource-name=<user-name>
     "name": "<user-name>",
     "groups": [
         "<group-name-1>",
-        "<group-name-2>"
+        "<group-name-2>",
+        ...
+        "<group-name-n>"
     ]
 }
 
 ```
+**Response:**
+```
+{
+    "name": "<user-name>",
+    "groups": [
+        "<group-name-1>",
+        "<group-name-2>",
+        ...
+        "<group-name-n>"
+    ]
+}
+```
 
-### Remove user
+### Remove existing user
 ```
 GET https://<host>:<port>/user-remove?resource-name=<user-name>
 ```
@@ -316,8 +780,12 @@ GET https://<host>:<port>/user-remove?resource-name=<user-name>
 ```
 <empty>
 ```
+**Response:**
+```
+<user-name>
+```
 
-### Register user
+### Register new user with suggested user name
 ```
 GET https://<host>:<port>/user-register?resource-name=<user-name>
 ```
@@ -334,7 +802,7 @@ GET https://<host>:<port>/user-register?resource-name=<user-name>
     "tokens": [
         {
             "content": "<token>",
-            "id": "<uuid>",
+            "id": "<uid>",
             "resource": "<user-name>",
             "validity": "<timestamp>"
         }
@@ -344,15 +812,78 @@ GET https://<host>:<port>/user-register?resource-name=<user-name>
 
 ---
 
+## User authentication tokens management
+
+### List authentication tokens for given user
+```
+GET https://<host>:<port>/list-user-tokens
+```
+**Body:**
+```
+<empty>
+```
+**Response:**
+```
+"tokens": [
+    {
+        "content": "<token>",
+        "id": "<uid>",
+        "resource": "<user-name>",
+        "validity": "<timestamp>"
+    }
+]
+```
+
+### Generate user authentication token
+```
+GET https://<host>:<port>/user-token-generate?resource-id=<uid>&resource-name=<user-name>
+```
+**Body:**
+```
+<empty>
+```
+**Response:**
+```
+{
+    "content": "<token>",
+    "id": "<uid>",
+    "resource": "<user-name>",
+    "validity": "<timestamp>"
+}
+```
+
+### Remove user authentication token
+```
+GET https://<host>:<port>/user-token-remove?resource-id=<uid>&resource-name=<user-name>
+```
+**Body:**
+```
+<empty>
+```
+**Response:**
+```
+<uid>
+```
+
+---
+
 ## Group management
 
-### List groups
+### List groups on the cloud server
 ```
 GET https://<host>:<port>/list-groups
 ```
 **Body:**
 ```
 <empty>
+```
+**Response:**
+```
+"groups": [
+    {
+        "name": "<group-name>"
+    }
+]
 ```
 
 ### Get group information
@@ -363,8 +894,14 @@ GET https://<host>:<port>/group-info?resource-name=<group-name>
 ```
 <empty>
 ```
+**Response:**
+```
+{
+    "name": "<group-name>"
+}
+```
 
-### Add group
+### Add new group
 ```
 GET https://<host>:<port>/group-add?resource-name=<group-name>
 ```
@@ -372,14 +909,24 @@ GET https://<host>:<port>/group-add?resource-name=<group-name>
 ```
 <empty>
 ```
+**Response:**
+```
+{
+    "name": "<group-name>"
+}
+```
 
-### Remove group
+### Remove existing group
 ```
 GET https://<host>:<port>/group-remove?resource-name=<group-name>
 ```
 **Body:**
 ```
 <empty>
+```
+**Response:**
+```
+<group-name>
 ```
 
 ---
@@ -397,4 +944,8 @@ GET https://<host>:<port>/submit-report
     "report": "Report text"
     "comment": "Additional comments"
 }
+```
+**Response:**
+```
+<report-status>
 ```
