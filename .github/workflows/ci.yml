@@ -107,6 +107,7 @@ jobs:
         with:
           pattern: ${{ github.event.repository.name }}-*packages
           merge-multiple: true
+          path: artifacts
 
       - name: List files
         run: ls -lah artifacts
