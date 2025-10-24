@@ -88,6 +88,7 @@ then
     cp -v "$scriptsDir/cloud_start.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_stop.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_status.sh" "$dstScriptsDir/" && \
+    cp -v "$scriptsDir/cloud_tool.sh" "$dstScriptsDir/" && \
     mkdir -pv "$dstProcessesDir" && \
     cp -v "$processesDir/"* "$dstProcessesDir/"
     assert_success $? "Failed to prepare Cloud directory: \"$cloudDir\""
