@@ -50,7 +50,7 @@
 
 ### Send a test request (ping) to the cloud server
 ```
-POST https://<host>:<port>/test-request
+POST https://<host>:<port>/test-request/
 ```
 **Body:**
 ```
@@ -63,7 +63,7 @@ POST https://<host>:<port>/test-request
 
 ### Cloud server statistics
 ```
-GET https://<host>:<port>/statistics
+GET https://<host>:<port>/statistics/
 ```
 **Body:**
 ```
@@ -123,7 +123,7 @@ GET https://<host>:<port>/statistics
 
 ### Stop the cloud server
 ```
-GET https://<host>:<port>/stop
+GET https://<host>:<port>/stop/
 ```
 **Body:**
 ```
@@ -140,7 +140,7 @@ GET https://<host>:<port>/stop
 
 ### List files on the cloud server
 ```
-GET https://<host>:<port>/list-files
+GET https://<host>:<port>/list-files/
 ```
 **Body:**
 ```
@@ -179,7 +179,7 @@ GET https://<host>:<port>/list-files
 
 ### Get file information
 ```
-GET https://<host>:<port>/file-info?resource-id=<uid>
+GET https://<host>:<port>/file-info/?resource-id=<uid>
 ```
 **Body:**
 ```
@@ -216,7 +216,7 @@ GET https://<host>:<port>/file-info?resource-id=<uid>
 
 ### Upload file to the cloud server
 ```
-PUT https://<host>:<port>/file-upload?resource-name=<file-path>
+PUT https://<host>:<port>/file-upload/?resource-name=<file-path>
 ```
 **Body:**
 ```
@@ -253,7 +253,7 @@ PUT https://<host>:<port>/file-upload?resource-name=<file-path>
 
 ### Update file on the cloud server
 ```
-POST https://<host>:<port>/file-update?resource-id=<uid>&resource-name=<file-path>
+POST https://<host>:<port>/file-update/?resource-id=<uid>&resource-name=<file-path>
 ```
 **Body:**
 ```
@@ -290,7 +290,7 @@ POST https://<host>:<port>/file-update?resource-id=<uid>&resource-name=<file-pat
 
 ### Update file access owner on the cloud server
 ```
-POST https://<host>:<port>/file-update-access-owner?resource-id=<uid>
+POST https://<host>:<port>/file-update-access-owner/?resource-id=<uid>
 ```
 **Body:**
 ```
@@ -330,7 +330,7 @@ POST https://<host>:<port>/file-update-access-owner?resource-id=<uid>
 
 ### Update file access mode on the cloud server
 ```
-POST https://<host>:<port>/file-update-access-mode?resource-id=<uid>
+POST https://<host>:<port>/file-update-access-mode/?resource-id=<uid>
 ```
 **Body:**
 ```
@@ -382,7 +382,7 @@ POST https://<host>:<port>/file-update-access-mode?resource-id=<uid>
 
 ### Update file version on the cloud server
 ```
-POST https://<host>:<port>/file-update-version?resource-id=<uid>
+POST https://<host>:<port>/file-update-version/?resource-id=<uid>
 ```
 **Body:**
 ```
@@ -420,7 +420,7 @@ POST https://<host>:<port>/file-update-version?resource-id=<uid>
 ### Update file tags on the cloud server
 
 ```
-POST https://<host>:<port>/file-update-tags?resource-id=<uid>
+POST https://<host>:<port>/file-update-tags/?resource-id=<uid>
 ```
 **Body:**
 ```
@@ -457,7 +457,7 @@ POST https://<host>:<port>/file-update-tags?resource-id=<uid>
 
 ### Download file from the cloud server
 ```
-GET https://<host>:<port>/file-download?resource-id=<uid>
+GET https://<host>:<port>/file-download/?resource-id=<uid>
 ```
 **Body:**
 ```
@@ -470,7 +470,7 @@ GET https://<host>:<port>/file-download?resource-id=<uid>
 
 ### Remove file from the cloud server
 ```
-GET https://<host>:<port>/file-remove?resource-id=<uid>
+GET https://<host>:<port>/file-remove/?resource-id=<uid>
 ```
 **Body:**
 ```
@@ -489,7 +489,7 @@ GET https://<host>:<port>/file-remove?resource-id=<uid>
 ### Start a cloud server process
 
 ```
-POST https://<host>:<port>/process
+POST https://<host>:<port>/process/
 ```
 **Body:**
 Following is an example of "hello-world" process.
@@ -513,7 +513,7 @@ Following is an example of "hello-world" process.
 
 ### List processes on the cloud server
 ```
-GET https://<host>:<port>/list-processes
+GET https://<host>:<port>/list-processes/
 ```
 **Body:**
 ```
@@ -543,7 +543,7 @@ GET https://<host>:<port>/list-processes
 
 ### Update process access owner on the cloud server
 ```
-POST https://<host>:<port>/process-update-access-owner?resource-name=<resource-name>
+POST https://<host>:<port>/process-update-access-owner/?resource-name=<resource-name>
 ```
 **Body:**
 ```
@@ -574,7 +574,7 @@ POST https://<host>:<port>/process-update-access-owner?resource-name=<resource-n
 
 ### Update process access mode on the cloud server
 ```
-POST https://<host>:<port>/process-update-access-mode?resource-name=<resource-name>
+POST https://<host>:<port>/process-update-access-mode/?resource-name=<resource-name>
 ```
 **Body:**
 ```
@@ -621,7 +621,7 @@ POST https://<host>:<port>/process-update-access-mode?resource-name=<resource-na
 
 ### List actions on the cloud server
 ```
-GET https://<host>:<port>/list-actions
+GET https://<host>:<port>/list-actions/
 ```
 **Body:**
 ```
@@ -649,7 +649,7 @@ GET https://<host>:<port>/list-actions
 
 ### Update action access owner on the cloud server
 ```
-POST https://<host>:<port>/action-update-access-owner?resource-name=<resource-name>
+POST https://<host>:<port>/action-update-access-owner/?resource-name=<resource-name>
 ```
 **Body:**
 ```
@@ -678,7 +678,7 @@ POST https://<host>:<port>/action-update-access-owner?resource-name=<resource-na
 
 ### Update action access mode on the cloud server
 ```
-POST https://<host>:<port>/action-update-access-mode?resource-name=<resource-name>
+POST https://<host>:<port>/action-update-access-mode/?resource-name=<resource-name>
 ```
 **Body:**
 ```
@@ -723,7 +723,7 @@ POST https://<host>:<port>/action-update-access-mode?resource-name=<resource-nam
 
 ### List users on the cloud server
 ```
-GET https://<host>:<port>/list-users
+GET https://<host>:<port>/list-users/
 ```
 **Body:**
 ```
@@ -746,7 +746,7 @@ GET https://<host>:<port>/list-users
 
 ### Get user information
 ```
-GET https://<host>:<port>/user-info?resource-name=<user-name>
+GET https://<host>:<port>/user-info/?resource-name=<user-name>
 ```
 **Body:**
 ```
@@ -767,7 +767,7 @@ GET https://<host>:<port>/user-info?resource-name=<user-name>
 
 ### Add new user
 ```
-GET https://<host>:<port>/user-add?resource-name=<user-name>
+GET https://<host>:<port>/user-add/?resource-name=<user-name>
 ```
 **Body:**
 ```
@@ -788,7 +788,7 @@ GET https://<host>:<port>/user-add?resource-name=<user-name>
 
 ### Update existing user
 ```
-POST https://<host>:<port>/user-update?resource-name=<user-name>
+POST https://<host>:<port>/user-update/?resource-name=<user-name>
 ```
 **Body:**
 ```
@@ -818,7 +818,7 @@ POST https://<host>:<port>/user-update?resource-name=<user-name>
 
 ### Remove existing user
 ```
-GET https://<host>:<port>/user-remove?resource-name=<user-name>
+GET https://<host>:<port>/user-remove/?resource-name=<user-name>
 ```
 **Body:**
 ```
@@ -831,7 +831,7 @@ GET https://<host>:<port>/user-remove?resource-name=<user-name>
 
 ### Register new user with suggested user name
 ```
-GET https://<host>:<port>/user-register?resource-name=<user-name>
+GET https://<host>:<port>/user-register/?resource-name=<user-name>
 ```
 **Body:**
 ```
@@ -860,7 +860,7 @@ GET https://<host>:<port>/user-register?resource-name=<user-name>
 
 ### List authentication tokens for given user
 ```
-GET https://<host>:<port>/list-user-tokens
+GET https://<host>:<port>/list-user-tokens/
 ```
 **Body:**
 ```
@@ -880,7 +880,7 @@ GET https://<host>:<port>/list-user-tokens
 
 ### Generate user authentication token
 ```
-GET https://<host>:<port>/user-token-generate?resource-id=<uid>&resource-name=<user-name>
+GET https://<host>:<port>/user-token-generate/?resource-id=<uid>&resource-name=<user-name>
 ```
 **Body:**
 ```
@@ -898,7 +898,7 @@ GET https://<host>:<port>/user-token-generate?resource-id=<uid>&resource-name=<u
 
 ### Remove user authentication token
 ```
-GET https://<host>:<port>/user-token-remove?resource-id=<uid>&resource-name=<user-name>
+GET https://<host>:<port>/user-token-remove/?resource-id=<uid>&resource-name=<user-name>
 ```
 **Body:**
 ```
@@ -915,7 +915,7 @@ GET https://<host>:<port>/user-token-remove?resource-id=<uid>&resource-name=<use
 
 ### List groups on the cloud server
 ```
-GET https://<host>:<port>/list-groups
+GET https://<host>:<port>/list-groups/
 ```
 **Body:**
 ```
@@ -932,7 +932,7 @@ GET https://<host>:<port>/list-groups
 
 ### Get group information
 ```
-GET https://<host>:<port>/group-info?resource-name=<group-name>
+GET https://<host>:<port>/group-info/?resource-name=<group-name>
 ```
 **Body:**
 ```
@@ -947,7 +947,7 @@ GET https://<host>:<port>/group-info?resource-name=<group-name>
 
 ### Add new group
 ```
-GET https://<host>:<port>/group-add?resource-name=<group-name>
+GET https://<host>:<port>/group-add/?resource-name=<group-name>
 ```
 **Body:**
 ```
@@ -962,7 +962,7 @@ GET https://<host>:<port>/group-add?resource-name=<group-name>
 
 ### Remove existing group
 ```
-GET https://<host>:<port>/group-remove?resource-name=<group-name>
+GET https://<host>:<port>/group-remove/?resource-name=<group-name>
 ```
 **Body:**
 ```
@@ -979,7 +979,7 @@ GET https://<host>:<port>/group-remove?resource-name=<group-name>
 
 ### Submit report
 ```
-GET https://<host>:<port>/submit-report
+GET https://<host>:<port>/submit-report/
 ```
 **Body:**
 ```
