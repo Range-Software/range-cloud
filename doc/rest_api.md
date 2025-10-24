@@ -1,7 +1,7 @@
 # Range Cloud - REST API
 
 * [Service](#service)
-  * [Send a test request (ping) to the cloud server](#send-a-test-request-(ping)-to-the-cloud-server)
+  * [Send a test request (ping) to the cloud server](#send-a-test-request-ping-to-the-cloud-server)
   * [Cloud server statistics](#cloud-server-statistics)
   * [Stop the cloud server](#stop-the-cloud-server)
 * [File store](#file-store)
