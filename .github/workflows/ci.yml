@@ -138,7 +138,6 @@ jobs:
             [ -f "$f" ] || continue
             fileName="$(basename $f)"
             fileInfo=${fileName#$REPO_NAME}
-            echo "$fileInfo"
             fileVersion=$(echo $fileInfo | cut -d'-' -f2)
             fileOs=$(echo $fileInfo | cut -d'-' -f3)
             fileArch=$(echo $fileInfo | cut -d'-' -f4 | cut -d'.' -f1)
