@@ -85,9 +85,10 @@ then
     mkdir -pv "$dstBinDir" && \
     cp -v "$binDir/"* "$dstBinDir/" && \
     mkdir -pv "$dstScriptsDir" && \
+    cp -v "$scriptsDir/cloud_create_csr.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_start.sh" "$dstScriptsDir/" && \
-    cp -v "$scriptsDir/cloud_stop.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_status.sh" "$dstScriptsDir/" && \
+    cp -v "$scriptsDir/cloud_stop.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_tool.sh" "$dstScriptsDir/" && \
     mkdir -pv "$dstProcessesDir" && \
     cp -v "$processesDir/"* "$dstProcessesDir/"
