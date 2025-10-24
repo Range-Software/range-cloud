@@ -137,9 +137,11 @@ jobs:
           for f in artifacts/*; do
             [ -f "$f" ] || continue
             fileName="$(basename $f)"
-            fileVersion=$(echo ${f#$REPO_NAME} | cut -d'-' -f2)
-            fileOs=$(echo ${f#$REPO_NAME} | cut -d'-' -f3)
-            fileArch=$(echo ${f#$REPO_NAME} | cut -d'-' -f4 | cut -d'.' -f1)
+            fileInfo=${fileName#$REPO_NAME}
+            echo "$fileInfo"
+            fileVersion=$(echo $fileInfo | cut -d'-' -f2)
+            fileOs=$(echo $fileInfo | cut -d'-' -f3)
+            fileArch=$(echo $fileInfo | cut -d'-' -f4 | cut -d'.' -f1)
             echo "Uploading: $fileName"
             curl -X PUT --upload-file $f -o $HOME/response.json --key $HOME/.private_keys/range_cloud_key.pem --key-type PEM --pass 12345678 --cert $HOME/.private_keys/range_cloud_cert.pem  https://range-software.com:4012/file-upload/?resource-name=$fileName
             fileId=$(jq -r '.id' $HOME/response.json)
