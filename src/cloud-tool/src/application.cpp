@@ -197,6 +197,13 @@ void Application::onStarted()
             this->toolInput.addAction(RCloudToolAction::requestFileUpload(this->httpClient, path, name, authUser, authToken));
         }
 
+        if (argumentsParser.isSet(RCloudAction::Action::FileReplace::key))
+        {
+            QString path = argumentsParser.getValue(RCloudAction::Resource::Path::key).toString();
+            QString name = argumentsParser.getValue(RCloudAction::Resource::Name::key).toString();
+            this->toolInput.addAction(RCloudToolAction::requestFileReplace(this->httpClient, path, name, authUser, authToken));
+        }
+
         if (argumentsParser.isSet(RCloudAction::Action::FileUpdate::key))
         {
             QString path = argumentsParser.getValue(RCloudAction::Resource::Path::key).toString();

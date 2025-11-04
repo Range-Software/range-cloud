@@ -8,6 +8,7 @@
   * [List files on the cloud server](#list-files-on-the-cloud-server)
   * [Get file information](#get-file-information)
   * [Upload file to the cloud server](#upload-file-to-the-cloud-server)
+  * [Replace file on the cloud server](#replace-file-to-the-cloud-server)
   * [Update file on the cloud server](#update-file-on-the-cloud-server)
   * [Update file access owner on the cloud server](#update-file-access-owner-on-the-cloud-server)
   * [Update file access mode on the cloud server](#update-file-access-mode-on-the-cloud-server)
@@ -247,6 +248,50 @@ PUT https://<host>:<port>/file-upload/?resource-name=<file-path>
         "<tag-2>",
         ...
         "<tag-n>"
+    ]
+}
+```
+
+### Replace file on the cloud server
+All files with given file name and owned by the requestor will be replaced (removed) by provided file.
+_NOTE: All additional information such as tags, version and custom access rights will be reset to initial values._
+```
+PUT https://<host>:<port>/file-replace/?resource-name=<file-path>
+```
+**Body:**
+```
+<content of the file to be uploaded>
+```
+**Response:**
+```
+{
+    "upload": {
+        "id": "<uid>",
+        "path": "<file-path>",
+        "size": "<bytes>",
+        "created": "<seconds-since-epoch>",
+        "updated": "<seconds-since-epoch>",
+        "version": "<version>",
+        "access": {
+            "mode": {
+                "user": <access-mode>,
+                "group": <access-mode>,
+                "other": <access-mode>
+            },
+            "owner": {
+                "user": "<owner-username>",
+                "group": "<owner-group>"
+            }
+        },
+        "tags": [
+            "<tag-1>",
+            "<tag-2>",
+            ...
+            "<tag-n>"
+        ]
+    },
+    "remove": [
+        ...
     ]
 }
 ```

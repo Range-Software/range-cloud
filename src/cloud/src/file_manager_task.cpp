@@ -73,6 +73,8 @@ QString FileManagerTask::actionToString(const Action &action)
             return QString("File information");
         case StoreFile:
             return QString("Store file");
+        case ReplaceFile:
+            return QString("Replace file");
         case UpdateFile:
             return QString("Update file");
         case UpdateFileAccessOwner:

@@ -23,6 +23,7 @@ class FileManagerTask
             ListFiles,
             FileInfo,
             StoreFile,
+            ReplaceFile,
             UpdateFile,
             UpdateFileAccessOwner,
             UpdateFileAccessMode,

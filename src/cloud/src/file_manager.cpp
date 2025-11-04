@@ -62,6 +62,11 @@ int FileManager::perform()
                     resultErrorType = this->storeFile(task.getExecutor(),*task.getObject(),result);
                     writeIndex = true;
                 }
+                else if (task.getAction() == FileManagerTask::Action::ReplaceFile)
+                {
+                    resultErrorType = this->replaceFile(task.getExecutor(),*task.getObject(),result);
+                    writeIndex = true;
+                }
                 else if (task.getAction() == FileManagerTask::Action::UpdateFile)
                 {
                     resultErrorType = this->updateFile(task.getExecutor(),*task.getObject(),result);
@@ -186,6 +191,11 @@ QUuid FileManager::requestFileInfo(const RUserInfo &executor, FileObject *object
 QUuid FileManager::requestStoreFile(const RUserInfo &executor, FileObject *object)
 {
     return this->enqueueTask(FileManagerTask(executor,FileManagerTask::StoreFile,object));
+}
+
+QUuid FileManager::requestReplaceFile(const RUserInfo &executor, FileObject *object)
+{
+    return this->enqueueTask(FileManagerTask(executor,FileManagerTask::ReplaceFile,object));
 }
 
 QUuid FileManager::requestUpdateFile(const RUserInfo &executor, FileObject *object)
@@ -432,6 +442,57 @@ RError::Type FileManager::storeFile(const RUserInfo &executor, const FileObject 
     output = QJsonDocument(fileInfo.toJson()).toJson();
 
     R_LOG_TRACE_RETURN(RError::None);
+}
+
+RError::Type FileManager::replaceFile(const RUserInfo &executor, const FileObject &object, QByteArray &output)
+{
+    R_LOG_TRACE_IN;
+    RLogger::debug("[%s] replaceFile: executor=\"%s\", storePath=\"%s\".\n",
+                   this->settings.getName().toUtf8().constData(),
+                   executor.getName().toUtf8().constData(),
+                   this->storePath.toUtf8().constData());
+
+    // List all files owned by executor.
+    QList<RFileInfo> files = this->fileIndex.listUserObjects(
+        [=](const RFileInfo &fileInfo)
+        {
+
+            return (fileInfo.getPath() == object.getInfo().getPath() && // File paths must be equal
+                    executor.isUser(fileInfo.getAccessRights().getOwner().getUser()) && // File must be owned by the executor
+                    UserManager::authorizeUserAccess(executor,fileInfo.getAccessRights(),RAccessMode::Write)); // File must be writable
+        }
+    );
+
+    QJsonObject jsonOutput;
+    QJsonArray jsonRemoveFileArray;
+
+    // Store new file object.
+    QByteArray uploadFileOutput;
+    RError::Type errorType = this->storeFile(executor,object,uploadFileOutput);
+    if (errorType == RError::None)
+    {
+        if (!files.isEmpty())
+        {
+            // Remove all replaced files.
+            for (const RFileInfo &fileInfo : std::as_const(files))
+            {
+                QByteArray removeFileOutput;
+                errorType = this->removeFile(executor,fileInfo.getId(),removeFileOutput);
+                jsonRemoveFileArray.append(QJsonDocument::fromJson(removeFileOutput).object());
+                if (errorType != RError::None)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    jsonOutput["upload"] = QJsonDocument::fromJson(uploadFileOutput).object();
+    jsonOutput["remove"] = jsonRemoveFileArray;
+
+    output = QJsonDocument(jsonOutput).toJson();
+
+    R_LOG_TRACE_RETURN(errorType);
 }
 
 RError::Type FileManager::updateFile(const RUserInfo &executor, const FileObject &object, QByteArray &output)
@@ -757,7 +818,7 @@ RError::Type FileManager::removeFile(const RUserInfo &executor, const QUuid &id,
         R_LOG_TRACE_RETURN(RError::InvalidInput);
     }
 
-    RFileInfo fileInfo = this->fileIndex.unregisterObject(id);
+    RFileInfo fileInfo(this->fileIndex.getObjectInfo(id));
 
     if (!UserManager::authorizeUserAccess(executor,fileInfo.getAccessRights(),RAccessMode::Write))
     {
@@ -767,6 +828,7 @@ RError::Type FileManager::removeFile(const RUserInfo &executor, const QUuid &id,
                        output.constData());
         R_LOG_TRACE_RETURN(RError::Unauthorized);
     }
+    fileInfo = this->fileIndex.unregisterObject(id);
 
     QDir storeDir(this->storePath);
     if (!storeDir.remove(fileInfo.getId().toString(QUuid::WithoutBraces)))

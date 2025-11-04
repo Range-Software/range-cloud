@@ -116,6 +116,32 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
         QUuid requestId = this->fileManager->requestStoreFile(executorInfo,fileObject);
         this->fileRequests.insert(requestId,action.getId());
     }
+    else if (action.getAction() == RCloudAction::Action::FileReplace::key)
+    {
+        FileObject *fileObject = new FileObject;
+        fileObject->getInfo().setPath(action.getResourceName());
+        fileObject->getInfo().setId(QUuid::createUuid());
+
+        RAccessOwner accessOwner;
+        accessOwner.setUser(executorInfo.getName());
+        accessOwner.setGroup(RUserInfo::userGroup);
+
+        RAccessMode accessMode;
+        accessMode.setUserModeMask(RAccessMode::Mode::Read | RAccessMode::Mode::Write);
+        accessMode.setGroupModeMask(RAccessMode::Mode::Read);
+        accessMode.setOtherModeMask(RAccessMode::Mode::None);
+
+        RAccessRights accessRights;
+        accessRights.setOwner(accessOwner);
+        accessRights.setMode(accessMode);
+
+        fileObject->getInfo().setAccessRights(accessRights);
+
+        fileObject->setContent(action.getData());
+
+        QUuid requestId = this->fileManager->requestReplaceFile(executorInfo,fileObject);
+        this->fileRequests.insert(requestId,action.getId());
+    }
     else if (action.getAction() == RCloudAction::Action::FileUpdate::key)
     {
         FileObject *fileObject = new FileObject;

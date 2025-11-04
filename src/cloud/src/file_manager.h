@@ -68,6 +68,9 @@ class FileManager : public RJob
         //! Request store file.
         QUuid requestStoreFile(const RUserInfo &executor, FileObject *object);
 
+        //! Request replace file.
+        QUuid requestReplaceFile(const RUserInfo &executor, FileObject *object);
+
         //! Request update file.
         QUuid requestUpdateFile(const RUserInfo &executor, FileObject *object);
 
@@ -117,6 +120,9 @@ class FileManager : public RJob
 
         //! Store file.
         RError::Type storeFile(const RUserInfo &executor, const FileObject &object, QByteArray &output);
+
+        //! Replace file.
+        RError::Type replaceFile(const RUserInfo &executor, const FileObject &object, QByteArray &output);
 
         //! Update file.
         RError::Type updateFile(const RUserInfo &executor, const FileObject &object, QByteArray &output);
