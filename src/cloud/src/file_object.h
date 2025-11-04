@@ -39,13 +39,13 @@ class FileObject
         //! Assignment operator.
         FileObject &operator =(const FileObject &fileObject);
 
-        //! Get const reference to file owner.
+        //! Get const reference to file information.
         const RFileInfo &getInfo() const;
 
-        //! Get reference to file owner.
+        //! Get reference to file information.
         RFileInfo &getInfo();
 
-        //! Set new file owner.
+        //! Set new file information.
         void setInfo(const RFileInfo &info);
 
         //! Get const reference to file content.
