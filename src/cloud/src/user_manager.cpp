@@ -479,7 +479,7 @@ bool UserManager::authorizeUserAccess(const RUserInfo &userInfo, const RAccessRi
     else
     {
         // Verify access
-        return (userInfo.isUser(RUserInfo::rootUser) || accessRights.isUserAuthorized(userInfo,accessMode));
+        return (userInfo.isUser(RUserInfo::rootUser) || userInfo.hasGroup(RUserInfo::rootGroup) || accessRights.isUserAuthorized(userInfo,accessMode));
     }
 }
 
