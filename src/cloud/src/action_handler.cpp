@@ -319,9 +319,14 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
     {
         RCloudAction resolvedAction(action);
 
-        if (this->userManager->containsUser(action.getResourceName()))
+        QString userName = action.getResourceName();
+        if (userName.isEmpty())
         {
-            RUserInfo userInfo = this->userManager->findUser(action.getResourceName());
+            userName = executorUser;
+        }
+        if (this->userManager->containsUser(userName))
+        {
+            RUserInfo userInfo = this->userManager->findUser(userName);
             resolvedAction.setData(QJsonDocument(userInfo.toJson()).toJson());
             resolvedAction.setErrorType(RError::None);
         }

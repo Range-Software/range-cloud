@@ -809,6 +809,7 @@ GET https://<host>:<port>/user-info/?resource-name=<user-name>
     ]
 }
 ```
+If no `<user-name>` is provided caller user information will be returned.
 
 ### Add new user
 ```
