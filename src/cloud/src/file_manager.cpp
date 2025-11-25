@@ -387,6 +387,16 @@ RError::Type FileManager::storeFile(const RUserInfo &executor, const FileObject 
         R_LOG_TRACE_RETURN(RError::Unauthorized);
     }
 
+    RFileQuota userStoreQuota(this->fileIndex.findStoreSize(executor.getName())+object.getContent().size(),
+                              object.getContent().size(),
+                              this->fileIndex.findStoreCount(executor.getName())+1);
+
+    if (executor.getFileQuota().quotaExceeded(userStoreQuota))
+    {
+        RLogger::error("[%s] User file quota exceeded.\n",this->settings.getName().toUtf8().constData());
+        R_LOG_TRACE_RETURN(RError::InvalidInput);
+    }
+
     if (this->settings.getMaxFileSize() > 0)
     {
         if (object.getContent().size() > this->settings.getMaxFileSize())
@@ -521,6 +531,16 @@ RError::Type FileManager::updateFile(const RUserInfo &executor, const FileObject
                        this->settings.getName().toUtf8().constData(),
                        output.constData());
         R_LOG_TRACE_RETURN(RError::Unauthorized);
+    }
+
+    RFileQuota userStoreQuota(this->fileIndex.findStoreSize(executor.getName()) + object.getContent().size() - fileInfo.getSize(),
+                              object.getContent().size() - fileInfo.getSize(),
+                              this->fileIndex.findStoreCount(executor.getName()));
+
+    if (executor.getFileQuota().quotaExceeded(userStoreQuota))
+    {
+        RLogger::error("[%s] User file quota exceeded.\n",this->settings.getName().toUtf8().constData());
+        R_LOG_TRACE_RETURN(RError::InvalidInput);
     }
 
     if (!RFileInfo::isPathValid(object.getInfo().getPath()))

@@ -71,8 +71,11 @@ class FileIndex
         //! Return size of the index (number of entries).
         qsizetype getSize() const;
 
-        //! Find store size.
-        qint64 findStoreSize() const;
+        //! Find store size (total file size).
+        qint64 findStoreSize(const QString &user = QString()) const;
+
+        //! Find store count (total file count).
+        qint64 findStoreCount(const QString &user = QString()) const;
 
         //! Get statistics output in Json form.
         QJsonObject getStatisticsJson() const;

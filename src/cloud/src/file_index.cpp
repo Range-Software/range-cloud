@@ -108,16 +108,34 @@ qsizetype FileIndex::getSize() const
     return this->index.size();
 }
 
-qint64 FileIndex::findStoreSize() const
+qint64 FileIndex::findStoreSize(const QString &user) const
 {
     qint64 totalSize = 0;
 
     for (auto it = this->index.cbegin(); it != this->index.cend(); ++it)
     {
-        totalSize += it.value().getSize();
+        if (user.isEmpty() || user == it.value().getAccessRights().getOwner().getUser())
+        {
+            totalSize += it.value().getSize();
+        }
     }
 
     return totalSize;
+}
+
+qint64 FileIndex::findStoreCount(const QString &user) const
+{
+    qint64 totalCount = 0;
+
+    for (auto it = this->index.cbegin(); it != this->index.cend(); ++it)
+    {
+        if (user.isEmpty() || user == it.value().getAccessRights().getOwner().getUser())
+        {
+            totalCount++;
+        }
+    }
+
+    return totalCount;
 }
 
 QJsonObject FileIndex::getStatisticsJson() const
