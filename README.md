@@ -6,6 +6,7 @@ Simple cloud service with HTTPs based [REST API](doc/rest_api.md) interface.
 
 1. Store files
     * Upload
+    * Replace
     * Update
     * Download
     * Set tags (alphanumeric string)
@@ -13,7 +14,7 @@ Simple cloud service with HTTPs based [REST API](doc/rest_api.md) interface.
     * Set access rights
 2. User management
     * Add user
-    * Modify user
+    * Modify user (change user name, modify user groups and configure file quotas)
     * Remove user
     * Grant/revoke access to actions
 3. HTTPs interface
@@ -24,11 +25,11 @@ Simple cloud service with HTTPs based [REST API](doc/rest_api.md) interface.
 5. Submit reports
 
 ## Prepare build environment
-Initialize all submodules
+Initialize all sub modules
 ```
 git submodule init && git submodule update --remote
 ```
-Following command will attempt to download and install all required packages, therefore it must be executed under priviledged (root) user
+Following command will attempt to download and install all required packages, therefore it must be executed under privileged (root) user
 ```
 sudo ./src/range-build-tools/prereqs.sh
 ```
@@ -70,7 +71,7 @@ $ <install-dir>/scripts/cloud_setup.sh \
 Where `<deploy-dir>` is a directory where cloud instance will be deployed.
 _NOTE: There can be multiple deployments on the same host._
 
-### Start/stop cloud as a beckground process
+### Start/stop cloud as a background process
 
 Following command will start Cloud as a background process.
 ```

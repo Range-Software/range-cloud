@@ -82,8 +82,13 @@ void MainTask::actionFinished(const QSharedPointer<RToolAction> &action)
 void MainTask::actionFailed(const QSharedPointer<RToolAction> &action)
 {
     R_LOG_TRACE_IN;
-    RHttpMessage response = action.staticCast<RCloudToolAction>().data()->getResponseMessage();
+    RHttpMessage responseMessage = action.staticCast<RCloudToolAction>().data()->getResponseMessage();
     RLogger::info("Action has failed.\n");
+    if (action.staticCast<RCloudToolAction>().data()->getType() != RCloudToolAction::FileDownload)
+    {
+        RLogger::info("Unhandled action response:\n");
+        RLogger::info("%s\n",responseMessage.getBody().constData());
+    }
     R_LOG_TRACE_OUT;
 }
 

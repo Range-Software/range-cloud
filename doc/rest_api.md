@@ -8,7 +8,7 @@
   * [List files on the cloud server](#list-files-on-the-cloud-server)
   * [Get file information](#get-file-information)
   * [Upload file to the cloud server](#upload-file-to-the-cloud-server)
-  * [Replace file on the cloud server](#replace-file-to-the-cloud-server)
+  * [Replace file on the cloud server](#replace-file-on-the-cloud-server)
   * [Update file on the cloud server](#update-file-on-the-cloud-server)
   * [Update file access owner on the cloud server](#update-file-access-owner-on-the-cloud-server)
   * [Update file access mode on the cloud server](#update-file-access-mode-on-the-cloud-server)
@@ -784,7 +784,14 @@ GET https://<host>:<port>/list-users/
             "<group-name-2>",
             ...
             "<group-name-n>"
-        ]
+        ],
+        "quotas": {
+            "files": {
+                "fileCount": "100",
+                "fileSize": "104857600",
+                "storeSize": "104857600"
+            }
+        }
     }
 ]
 ```
@@ -806,7 +813,14 @@ GET https://<host>:<port>/user-info/?resource-name=<user-name>
         "<group-name-2>",
         ...
         "<group-name-n>"
-    ]
+    ],
+    "quotas": {
+        "files": {
+            "fileCount": "100",
+            "fileSize": "104857600",
+            "storeSize": "104857600"
+        }
+    }
 }
 ```
 If no `<user-name>` is provided caller user information will be returned.
@@ -828,7 +842,14 @@ GET https://<host>:<port>/user-add/?resource-name=<user-name>
         "<group-name-2>",
         ...
         "<group-name-n>"
-    ]
+    ],
+    "quotas": {
+        "files": {
+            "fileCount": "100",
+            "fileSize": "104857600",
+            "storeSize": "104857600"
+        }
+    }
 }
 ```
 
@@ -845,10 +866,18 @@ POST https://<host>:<port>/user-update/?resource-name=<user-name>
         "<group-name-2>",
         ...
         "<group-name-n>"
-    ]
+    ],
+    "quotas": {
+        "files": {
+            "fileCount": "100",
+            "fileSize": "104857600",
+            "storeSize": "104857600"
+        }
+    }
 }
 
 ```
+_NOTE: If **"quotas:"** object is not provided or empty, default values will be set._
 **Response:**
 ```
 {
@@ -858,7 +887,14 @@ POST https://<host>:<port>/user-update/?resource-name=<user-name>
         "<group-name-2>",
         ...
         "<group-name-n>"
-    ]
+    ],
+    "quotas": {
+        "files": {
+            "fileCount": "100",
+            "fileSize": "104857600",
+            "storeSize": "104857600"
+        }
+    }
 }
 ```
 
@@ -881,6 +917,10 @@ GET https://<host>:<port>/user-register/?resource-name=<user-name>
 ```
 **Body:**
 ```
+<empty>
+```
+**Response:**
+```
 {
     "user": {
         "name": "<user-name>",
@@ -888,6 +928,13 @@ GET https://<host>:<port>/user-register/?resource-name=<user-name>
             "<group-name-1>",
             "<group-name-2>"
         ]
+    },
+    "quotas": {
+        "files": {
+            "fileCount": "100",
+            "fileSize": "104857600",
+            "storeSize": "104857600"
+        }
     },
     "tokens": [
         {

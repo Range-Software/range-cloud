@@ -393,7 +393,10 @@ RError::Type FileManager::storeFile(const RUserInfo &executor, const FileObject 
 
     if (executor.getFileQuota().quotaExceeded(userStoreQuota))
     {
-        RLogger::error("[%s] User file quota exceeded.\n",this->settings.getName().toUtf8().constData());
+        output = QString("User file quota exceeded.").toUtf8();
+        RLogger::error("[%s] %s.\n",
+                       this->settings.getName().toUtf8().constData(),
+                       output.constData());
         R_LOG_TRACE_RETURN(RError::InvalidInput);
     }
 
@@ -479,20 +482,24 @@ RError::Type FileManager::replaceFile(const RUserInfo &executor, const FileObjec
     // Store new file object.
     QByteArray uploadFileOutput;
     RError::Type errorType = this->storeFile(executor,object,uploadFileOutput);
-    if (errorType == RError::None)
+    if (errorType != RError::None)
     {
-        if (!files.isEmpty())
+        output = uploadFileOutput;
+        R_LOG_TRACE_RETURN(errorType);
+    }
+
+    if (!files.isEmpty())
+    {
+        // Remove all replaced files.
+        for (const RFileInfo &fileInfo : std::as_const(files))
         {
-            // Remove all replaced files.
-            for (const RFileInfo &fileInfo : std::as_const(files))
+            QByteArray removeFileOutput;
+            errorType = this->removeFile(executor,fileInfo.getId(),removeFileOutput);
+            jsonRemoveFileArray.append(QJsonDocument::fromJson(removeFileOutput).object());
+            if (errorType != RError::None)
             {
-                QByteArray removeFileOutput;
-                errorType = this->removeFile(executor,fileInfo.getId(),removeFileOutput);
-                jsonRemoveFileArray.append(QJsonDocument::fromJson(removeFileOutput).object());
-                if (errorType != RError::None)
-                {
-                    break;
-                }
+                output = uploadFileOutput;
+                R_LOG_TRACE_RETURN(errorType);
             }
         }
     }
@@ -539,7 +546,10 @@ RError::Type FileManager::updateFile(const RUserInfo &executor, const FileObject
 
     if (executor.getFileQuota().quotaExceeded(userStoreQuota))
     {
-        RLogger::error("[%s] User file quota exceeded.\n",this->settings.getName().toUtf8().constData());
+        output = QString("User file quota exceeded.").toUtf8();
+        RLogger::error("[%s] %s.\n",
+                       this->settings.getName().toUtf8().constData(),
+                       output.constData());
         R_LOG_TRACE_RETURN(RError::InvalidInput);
     }
 
