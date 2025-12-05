@@ -298,7 +298,7 @@ PUT https://<host>:<port>/file-replace/?resource-name=<file-path>
 
 ### Update file on the cloud server
 ```
-POST https://<host>:<port>/file-update/?resource-id=<uid>&resource-name=<file-path>
+PUT https://<host>:<port>/file-update/?resource-id=<uid>&resource-name=<file-path>
 ```
 **Body:**
 ```
