@@ -253,7 +253,7 @@ PUT https://<host>:<port>/file-upload/?resource-name=<file-path>
 ```
 
 ### Replace file on the cloud server
-All files with given file name and owned by the requestor will be replaced (removed) by provided file.
+All files with given file name and owned by the requester will be replaced (removed) by provided file.
 _NOTE: All additional information such as tags, version and custom access rights will be reset to initial values._
 ```
 PUT https://<host>:<port>/file-replace/?resource-name=<file-path>
