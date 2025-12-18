@@ -47,10 +47,10 @@ jobs:
           brew install ninja || true
 
       # Qt
-      - name: Install Qt 6.10.0
+      - name: Install Qt 6.10.1
         uses: jurplel/install-qt-action@v4
         with:
-          version: '6.10.0'
+          version: '6.10.1'
           host: ${{ matrix.qt_host }}
           target: desktop
           arch: ${{ matrix.qt_arch }}
