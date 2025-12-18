@@ -1,5 +1,10 @@
 ------------------------------------------------------------------
-Version 0.0.1
+Version 1.0.1
+
+- Print Qt library and core application info on startup
+
+------------------------------------------------------------------
+Version 1.0.0
 
 Initial release.
 
