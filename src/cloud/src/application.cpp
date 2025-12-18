@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QLibraryInfo>
 
 #include <rbl_arguments_parser.h>
 #include <rbl_error.h>
@@ -264,6 +265,15 @@ void Application::onStarted()
         }
 
         RLogger::getInstance().setFile(configuration.getLogFilePath());
+
+        RLogger::info("[Application] Qt version: %s\n", QLibraryInfo::version().toString().toUtf8().constData());
+        RLogger::info("[Application] Qt plugins paths: %s\n", QLibraryInfo::paths(QLibraryInfo::PluginsPath).join(",").toUtf8().constData());
+        RLogger::info("[Application] Qt libraries paths: %s\n", QLibraryInfo::paths(QLibraryInfo::LibrariesPath).join(",").toUtf8().constData());
+        RLogger::info("[Application] Qt library executables paths: %s\n", QLibraryInfo::paths(QLibraryInfo::LibraryExecutablesPath).join(",").toUtf8().constData());
+        RLogger::info("[Application] Qt core application library paths: %s\n", QCoreApplication::libraryPaths().join(",").toUtf8().constData());
+        RLogger::info("[Application] Qt ssl support: %s\n",QSslSocket::supportsSsl()?"true":"false");
+        RLogger::info("[Application] Qt ssl active backend: %s\n", QSslSocket::activeBackend().toUtf8().constData());
+        RLogger::info("[Application] Qt ssl available backends: %s\n",QSslSocket::availableBackends().join(",").toUtf8().constData());
 
         RLogger::info("[Application] Starting services\n");
         RLogger::info("[Application] Ideal thread count: %d\n",QThread::idealThreadCount());
