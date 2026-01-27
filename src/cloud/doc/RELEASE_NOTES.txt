@@ -1,4 +1,10 @@
 ------------------------------------------------------------------
+Version 1.0.2
+
+- Improved HTTP server thread safety, timeout handling, and resource cleanup
+- Added script to renew expired certificate for local accounts
+
+------------------------------------------------------------------
 Version 1.0.1
 
 - Print Qt library and core application info on startup

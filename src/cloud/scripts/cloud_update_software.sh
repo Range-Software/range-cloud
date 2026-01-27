@@ -86,6 +86,7 @@ then
     cp -v "$binDir/"* "$dstBinDir/" && \
     mkdir -pv "$dstScriptsDir" && \
     cp -v "$scriptsDir/cloud_create_csr.sh" "$dstScriptsDir/" && \
+    cp -v "$scriptsDir/cloud_renew_cert.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_start.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_status.sh" "$dstScriptsDir/" && \
     cp -v "$scriptsDir/cloud_stop.sh" "$dstScriptsDir/" && \

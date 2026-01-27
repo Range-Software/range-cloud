@@ -2,3 +2,5 @@ build-*
 *.txt.user
 *~
 .DS_Store
+*.swp
+CLAUDE.md
