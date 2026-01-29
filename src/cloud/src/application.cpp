@@ -2,6 +2,7 @@
 #include <locale.h>
 
 #include <QDir>
+#include <QLoggingCategory>
 #include <QTimer>
 #include <QSettings>
 #include <QStandardPaths>
@@ -23,6 +24,8 @@ const QString Application::cloudDirectoryKey = "cloud-directory";
 const QString Application::rangeCaDirectoryKey = "range-ca-directory";
 const QString Application::logDebugKey = "log-debug";
 const QString Application::logTraceKey = "log-trace";
+const QString Application::logQtKey = "log-qt";
+const QString Application::logSslKey = "log-ssl";
 const QString Application::publicHttpPortKey = "public-http-port";
 const QString Application::privateHttpPortKey = "private-http-port";
 const QString Application::publicKeyKey = "public-key";
@@ -151,6 +154,8 @@ void Application::onStarted()
 
         validOptions.append(RArgumentOption(Application::logDebugKey,RArgumentOption::Switch,QVariant(),"Switch on debug log level",RArgumentOption::Logger,false));
         validOptions.append(RArgumentOption(Application::logTraceKey,RArgumentOption::Switch,QVariant(),"Switch on trace log level",RArgumentOption::Logger,false));
+        validOptions.append(RArgumentOption(Application::logQtKey,RArgumentOption::Switch,QVariant(),"Route Qt debug messages through RLogger",RArgumentOption::Logger,false));
+        validOptions.append(RArgumentOption(Application::logSslKey,RArgumentOption::Switch,QVariant(),"Enable Qt SSL debug logging",RArgumentOption::Logger,false));
 
         validOptions.append(RArgumentOption(Application::publicHttpPortKey,RArgumentOption::Integer,Configuration::getDefaultPublicHttpPort(),"Public HTTP Server port",RArgumentOption::Optional,false));
         validOptions.append(RArgumentOption(Application::privateHttpPortKey,RArgumentOption::Integer,Configuration::getDefaultPrivateHttpPort(),"Private HTTP Server port",RArgumentOption::Optional,false));
@@ -176,6 +181,30 @@ void Application::onStarted()
         if (argumentsParser.isSet(Application::logTraceKey))
         {
             RLogger::getInstance().setLevel(R_LOG_LEVEL_TRACE);
+        }
+        if (argumentsParser.isSet(Application::logQtKey) ||
+            argumentsParser.isSet(Application::logSslKey))
+        {
+            RLogger::installQtMessageHandler();
+            RLogger::debug("Qt message handler installed\n");
+
+            if (argumentsParser.isSet(Application::logQtKey))
+            {
+                QLoggingCategory::setFilterRules("qt.*=true");
+                RLogger::debug("All Qt logging enabled\n");
+            }
+            else if (argumentsParser.isSet(Application::logSslKey))
+            {
+                QLoggingCategory::setFilterRules(
+                    "qt.network.ssl.debug=true\n"
+                    "qt.network.ssl.info=true\n"
+                    "qt.network.ssl.warning=true\n"
+                    "qt.tlsbackend.ossl.debug=true\n"
+                    "qt.tlsbackend.ossl.info=true\n"
+                    "qt.tlsbackend.ossl.warning=true"
+                );
+                RLogger::debug("SSL logging enabled\n");
+            }
         }
 
         if (argumentsParser.isSet("help"))

@@ -24,6 +24,8 @@ class Application : public QCoreApplication
         static const QString rangeCaDirectoryKey;
         static const QString logDebugKey;
         static const QString logTraceKey;
+        static const QString logQtKey;
+        static const QString logSslKey;
         static const QString publicHttpPortKey;
         static const QString privateHttpPortKey;
         static const QString publicKeyKey;

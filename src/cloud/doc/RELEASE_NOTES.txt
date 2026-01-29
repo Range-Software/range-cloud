@@ -2,7 +2,9 @@
 Version 1.0.2
 
 - Improved HTTP server thread safety, timeout handling, and resource cleanup
+- Added certificate expiry validation to RHttpServer and RHttpClient
 - Added script to renew expired certificate for local accounts
+- Log Qt debug messages
 
 ------------------------------------------------------------------
 Version 1.0.1

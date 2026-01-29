@@ -32,6 +32,8 @@ Usage: $myName.sh [OPTION]...
 
     --log-debug              Switch on debug log level
     --log-trace              Switch on trace log level
+    --log-ssl                Switch on ssl debug log level
+    --log-qt                 Switch on qt debug log level
 
     --help, -h, -?           Print this help and exit
 
@@ -44,7 +46,7 @@ do
         --interactive)
             runInteractive="true"
             ;;
-        --log-debug | --log-trace)
+        --log-debug | --log-trace | --log-ssl | --log-qt)
             additionalParameters+=" $1"
             ;;
         --help | -h | -?)
