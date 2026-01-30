@@ -154,7 +154,7 @@ void Application::onStarted()
 
         validOptions.append(RArgumentOption(Application::logDebugKey,RArgumentOption::Switch,QVariant(),"Switch on debug log level",RArgumentOption::Logger,false));
         validOptions.append(RArgumentOption(Application::logTraceKey,RArgumentOption::Switch,QVariant(),"Switch on trace log level",RArgumentOption::Logger,false));
-        validOptions.append(RArgumentOption(Application::logQtKey,RArgumentOption::Switch,QVariant(),"Route Qt debug messages through RLogger",RArgumentOption::Logger,false));
+        validOptions.append(RArgumentOption(Application::logQtKey,RArgumentOption::Switch,QVariant(),"Enable Qt debug logging",RArgumentOption::Logger,false));
         validOptions.append(RArgumentOption(Application::logSslKey,RArgumentOption::Switch,QVariant(),"Enable Qt SSL debug logging",RArgumentOption::Logger,false));
 
         validOptions.append(RArgumentOption(Application::publicHttpPortKey,RArgumentOption::Integer,Configuration::getDefaultPublicHttpPort(),"Public HTTP Server port",RArgumentOption::Optional,false));
