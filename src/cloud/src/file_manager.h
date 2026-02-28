@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QFile>
 #include <QQueue>
+#include <QSharedPointer>
 #include <QUuid>
 #include <QMutex>
 
@@ -151,7 +152,7 @@ class FileManager : public RJob
         void ready();
 
         //! Request completed.
-        void requestCompleted(const QUuid &requestId, const FileObject *object);
+        void requestCompleted(const QUuid &requestId, QSharedPointer<const FileObject> object);
 
 };
 

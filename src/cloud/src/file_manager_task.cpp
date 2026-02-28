@@ -15,7 +15,7 @@ FileManagerTask::FileManagerTask(const RUserInfo &executor, Action action, FileO
     id(QUuid::createUuid()),
     executor(executor),
     action(action),
-    object(object)
+    object(QSharedPointer<FileObject>(object))
 {
     this->_init();
 }
@@ -53,10 +53,15 @@ FileManagerTask::Action FileManagerTask::getAction() const
 
 const FileObject *FileManagerTask::getObject() const
 {
-    return this->object;
+    return this->object.get();
 }
 
 FileObject *FileManagerTask::getObject()
+{
+    return this->object.get();
+}
+
+const QSharedPointer<FileObject> &FileManagerTask::getObjectShared() const
 {
     return this->object;
 }

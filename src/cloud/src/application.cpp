@@ -69,6 +69,14 @@ Application::Application(int &argc, char **argv) :
     QTimer::singleShot(0, this, SIGNAL(started()));
 }
 
+Application::~Application()
+{
+    delete this->publicHttpServer;
+    delete this->privateHttpServer;
+    delete this->fileManager;
+    delete this->mailer;
+}
+
 void Application::serviceStarted()
 {
     R_LOG_TRACE_IN;
@@ -616,6 +624,7 @@ void Application::actionResolved(const RCloudAction &action)
     else
     {
         RLogger::error("[Application] Unknown handler for action ID: \"%s\"\n",action.getId().toString(QUuid::WithoutBraces).toUtf8().constData());
+        this->actionToMessageMap.remove(action.getId());
         R_LOG_TRACE_OUT;
         return;
     }

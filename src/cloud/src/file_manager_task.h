@@ -1,6 +1,7 @@
 #ifndef FILE_MANAGER_TASK_H
 #define FILE_MANAGER_TASK_H
 
+#include <QSharedPointer>
 #include <QString>
 
 #include <rcl_user_info.h>
@@ -39,7 +40,7 @@ class FileManagerTask
         QUuid id;
         RUserInfo executor;
         Action action;
-        FileObject *object;
+        QSharedPointer<FileObject> object;
 
     public:
 
@@ -69,6 +70,9 @@ class FileManagerTask
 
         //! Get pointer to object.
         FileObject *getObject();
+
+        //! Get shared pointer to object.
+        const QSharedPointer<FileObject> &getObjectShared() const;
 
         static QString actionToString(const FileManagerTask::Action &action);
 

@@ -15,6 +15,7 @@ class UnixSignalHandler: public QObject
 
     public:
         UnixSignalHandler(int signal, QObject *parent = nullptr);
+        ~UnixSignalHandler();
 
         static const int max_signal = 32;
 

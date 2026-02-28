@@ -841,7 +841,7 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
     R_LOG_TRACE_OUT;
 }
 
-void ActionHandler::onFileRequestCompleted(const QUuid &requestId, const FileObject *object)
+void ActionHandler::onFileRequestCompleted(const QUuid &requestId, QSharedPointer<const FileObject> object)
 {
     R_LOG_TRACE_IN;
     RLogger::info("[ActionHandler] File request ID: \"%s\" completed with error type: \"%d - %s\".\n",
@@ -863,7 +863,6 @@ void ActionHandler::onFileRequestCompleted(const QUuid &requestId, const FileObj
                        object->getContent());
         action.setErrorType(object->getErrorType());
         this->fileRequests.remove(requestId);
-        delete object;
         emit this->resolved(action);
     }
     R_LOG_TRACE_OUT;
@@ -879,6 +878,7 @@ void ActionHandler::onProcessRequestCompleted(const QUuid &requestId, const RClo
     if (!this->processRequests.contains(requestId))
     {
         RLogger::info("[ActionHandler] Process request \"%s\" not found among registered requests.\n",requestId.toString(QUuid::WithoutBraces).toUtf8().constData());
+        this->processManager->finalizeProcess(requestId);
     }
     else
     {

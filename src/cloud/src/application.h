@@ -89,6 +89,9 @@ class Application : public QCoreApplication
         //! Constructor.
         explicit Application(int &argc, char **argv);
 
+        //! Destructor.
+        virtual ~Application();
+
     private:
 
         void serviceStarted();

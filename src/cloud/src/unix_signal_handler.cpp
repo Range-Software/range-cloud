@@ -13,6 +13,7 @@ std::array<QPointer<UnixSignalHandler>, UnixSignalHandler::max_signal> UnixSigna
 
 UnixSignalHandler::UnixSignalHandler(int signal, QObject *parent)
     : QObject(parent)
+    , fd{-1, -1}
 {
     if (UnixSignalHandler::handler[signal] != nullptr)
     {
@@ -43,6 +44,12 @@ UnixSignalHandler::UnixSignalHandler(int signal, QObject *parent)
     }
 
     UnixSignalHandler::handler[signal] = this;
+}
+
+UnixSignalHandler::~UnixSignalHandler()
+{
+    if (fd[0] != -1) ::close(fd[0]);
+    if (fd[1] != -1) ::close(fd[1]);
 }
 
 // This slot is connected to our socket notifier.  It reads the byte that the

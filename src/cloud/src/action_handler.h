@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QSharedPointer>
 
 #include <rcl_cloud_action.h>
 
@@ -55,7 +56,7 @@ class ActionHandler : public QObject
     protected slots:
 
         //! File manager request is completed.
-        void onFileRequestCompleted(const QUuid &requestId, const FileObject *object);
+        void onFileRequestCompleted(const QUuid &requestId, QSharedPointer<const FileObject> object);
         //! Process manager request is completed.
         void onProcessRequestCompleted(const QUuid &requestId, const RCloudProcessResult &result);
 

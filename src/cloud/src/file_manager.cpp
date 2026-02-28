@@ -133,7 +133,7 @@ int FileManager::perform()
                     }
                 }
 
-                emit this->requestCompleted(task.getId(),task.getObject());
+                emit this->requestCompleted(task.getId(),task.getObjectShared());
             }
 
             safeStopFlag = this->stopFlag;
@@ -173,6 +173,11 @@ void FileManager::stop()
         QThread::msleep(10);
     }
     this->serviceMutex.unlock();
+
+    this->syncMutex.lock();
+    this->tasks.clear();
+    this->syncMutex.unlock();
+
     RLogger::info("[%s] Service has been stopped.\n",
                   this->settings.getName().toUtf8().constData());
     R_LOG_TRACE_OUT;
