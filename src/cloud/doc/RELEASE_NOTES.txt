@@ -1,4 +1,11 @@
 ------------------------------------------------------------------
+Version 1.0.4
+
+Bug fixes:
+
+- Fix SSL error on macOS by seeding system CA certificates
+
+------------------------------------------------------------------
 Version 1.0.3
 
 - Fixed various memory leaks
