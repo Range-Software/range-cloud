@@ -47,10 +47,10 @@ jobs:
           brew install ninja || true
 
       # Qt
-      - name: Install Qt 6.10.1
+      - name: Install Qt 6.10.2
         uses: jurplel/install-qt-action@v4
         with:
-          version: '6.10.1'
+          version: '6.10.2'
           host: ${{ matrix.qt_host }}
           target: desktop
           arch: ${{ matrix.qt_arch }}
@@ -83,9 +83,6 @@ jobs:
           path: |
             build-Release/${{ github.event.repository.name }}-*.deb
             build-Release/${{ github.event.repository.name }}-*.rpm
-            build-Release/${{ github.event.repository.name }}-*.sh
-            build-Release/${{ github.event.repository.name }}-*.run
-            build-Release/${{ github.event.repository.name }}-*.zip
             build-Release/${{ github.event.repository.name }}-*.tar.gz
             build-Release/${{ github.event.repository.name }}-*.dmg
           if-no-files-found: error
