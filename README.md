@@ -106,6 +106,11 @@ $ <deploy-dir>/bin/cloud-tool --host-key=<path_to_public_host_key> \
                               --process --json-content='{ "name": "hello-world", "arguments": { "<value2>": "value2", "<value1>": "value1" } }'
 ```
 
+## Deployment guides
+
+* [Range Cloud Native Deployment Guide](doc/deploy_native.md)
+* [Range Cloud Container Deployment Guide](doc/deploy_container.md)
+
 ## Download
 To download already built binaries please visit http://range-software.com
 
