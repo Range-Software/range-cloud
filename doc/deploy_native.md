@@ -25,8 +25,8 @@ The following values are used throughout this guide. Adjust them to match your e
 
 ```bash
 # Your deployment
-HOST_NAME="your-host-name.com"
-ADMIN_ACCOUNT="admin.name@your-host-name.com"
+HOST_NAME="my-cloud-host.com"
+ADMIN_ACCOUNT="admin.name@my-cloud-host.com"
 
 # Directories
 CLOUD_DIR="$HOME/range-cloud"
@@ -71,8 +71,8 @@ Network ports:
 
 | Purpose | Port |
 |---------|------|
-| Public HTTP | `4080` |
-| Private HTTP (admin) | `4443` |
+| Public HTTP | `4011` |
+| Private HTTP (admin) | `4012` |
 
 Ensure these ports are open in your firewall. The public port is used by clients; the private port is used for administration via `cloud-tool`.
 

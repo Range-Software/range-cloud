@@ -3,10 +3,10 @@
 myName=$(basename "$0" .sh)
 
 # Defaults
-hostName="your-host-name.com"
-adminAccount="admin@your-host-name.com"
-publicPort=4080
-privatePort=4443
+hostName="my-cloud-host.com"
+adminAccount="admin@my-cloud-host.com"
+publicPort=4011
+privatePort=4012
 caCountry="EU"
 caState="CZ"
 caLocation="Prague"

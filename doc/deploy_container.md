@@ -32,10 +32,10 @@ scripts/generate_containerfile.sh --package-file=FILENAME [OPTION]...
 | Parameter | Required | Default | Description |
 |-----------|----------|---------|-------------|
 | `--package-file=FILENAME` | Yes | — | Path to the range-cloud `.tar.gz` package |
-| `--host-name=NAME` | No | `your-host-name.com` | Host name embedded in generated certificates |
-| `--admin-account=EMAIL` | No | `admin@your-host-name.com` | Administrator account email address |
-| `--public-port=PORT` | No | `4080` | Public HTTP port exposed by the container |
-| `--private-port=PORT` | No | `4443` | Private HTTP port used for administration |
+| `--host-name=NAME` | No | `my-cloud-host.com` | Host name embedded in generated certificates |
+| `--admin-account=EMAIL` | No | `admin@my-cloud-host.com` | Administrator account email address |
+| `--public-port=PORT` | No | `4011` | Public HTTP port exposed by the container |
+| `--private-port=PORT` | No | `4012` | Private HTTP port used for administration |
 | `--ca-country=CODE` | No | `EU` | Two-letter country code for the CA certificate |
 | `--ca-state=NAME` | No | `CZ` | State or region for the CA certificate |
 | `--ca-location=NAME` | No | `Prague` | City for the CA certificate |
@@ -90,8 +90,8 @@ Run the script from the project root, pointing to the package file and providing
 ```bash
 scripts/generate_containerfile.sh \
     --package-file=/path/to/range-cloud-<version>-linux-x86_64.tar.gz \
-    --host-name=myhost.com \
-    --admin-account=admin@myhost.com \
+    --host-name=my-cloud-host.com \
+    --admin-account=admin@my-cloud-host.com \
     --output-dir=./container-build
 ```
 
@@ -115,15 +115,15 @@ The build may take several minutes while the CA and cloud service are configured
 # Docker
 docker run -d \
     --name range-cloud \
-    -p 4080:4080 \
-    -p 4443:4443 \
+    -p 4011:4011 \
+    -p 4012:4012 \
     range-cloud
 
 # Podman
 podman run -d \
     --name range-cloud \
-    -p 4080:4080 \
-    -p 4443:4443 \
+    -p 4011:4011 \
+    -p 4012:4012 \
     range-cloud
 ```
 
@@ -176,8 +176,8 @@ To persist data across container recreations, mount a volume over the cloud data
 ```bash
 docker run -d \
     --name range-cloud \
-    -p 4080:4443 \
-    -p 4443:4443 \
+    -p 4011:4012 \
+    -p 4012:4012 \
     -v range-cloud-data:/root/range-cloud \
     range-cloud
 ```
@@ -195,8 +195,8 @@ scripts/generate_containerfile.sh \
     --package-file=range-cloud-1.0.4-linux-x86_64.tar.gz \
     --host-name=cloud.example.org \
     --admin-account=sysadmin@example.org \
-    --public-port=8080 \
-    --private-port=8443 \
+    --public-port=8011 \
+    --private-port=8012 \
     --output-dir=./container-build
 ```
 
