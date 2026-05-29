@@ -41,7 +41,7 @@ scripts/generate_containerfile.sh --package-file=FILENAME [OPTION]...
 | `--ca-location=NAME` | No | `Prague` | City for the CA certificate |
 | `--ca-organization=NAME` | No | `Range Software` | Organization for the CA certificate |
 | `--ca-organization-unit=NAME` | No | `Cloud` | Organizational unit for the CA certificate |
-| `--ca-email=EMAIL` | No | `admin@HOST_NAME` | Contact email embedded in the CA certificate |
+| `--ca-email=EMAIL` | No | `admin@my-cloud-host.com` | Contact email embedded in the CA certificate |
 | `--base-image=IMAGE` | No | `ubuntu:24.04` | Base image for the generated Containerfile |
 | `--output-dir=DIR` | No | `.` (current directory) | Directory where generated files are written |
 | `--help`, `-h` | No | — | Print help and exit |
