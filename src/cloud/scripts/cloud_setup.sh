@@ -212,51 +212,7 @@ assert_nonempty "$keyOrganizationUnit" "Organization unit not specified"
 assert_port "$publicHttpPort" "Not a valid port number \"$publicHttpPort\""
 assert_port "$privateHttpPort" "Not a valid port number \"$privateHttpPort\""
 
-if [ -d "$cloudDir" ]
-then
-    cloudDir=$(realpath "$cloudDir")
-fi
-
-if [ "$cloudDir" != "$cloudPackageDir" ]
-then
-    dstBinDir="$cloudDir/bin"
-    dstScriptsDir="$cloudDir/scripts"
-    dstProcessesDir="$cloudDir/processes"
-
-    mkdir -pv "$dstBinDir" && \
-    cp -v "$binDir/"* "$dstBinDir/" && \
-    mkdir -pv "$dstScriptsDir" && \
-    cp -v "$scriptsDir/cloud_start.sh" "$dstScriptsDir/" && \
-    cp -v "$scriptsDir/cloud_stop.sh" "$dstScriptsDir/" && \
-    cp -v "$scriptsDir/cloud_status.sh" "$dstScriptsDir/" && \
-    mkdir -pv "$dstProcessesDir" && \
-    cp -v "$processesDir/"* "$dstProcessesDir/"
-    assert_success $? "Failed to prepare Cloud directory: \"$cloudDir\""
-
-    # Linux specific directories
-    if [ -d "$cloudPackageDir/lib" ]
-    then
-        cp -Rv "$cloudPackageDir/lib" "$cloudDir"
-        assert_success $? "Failed to copy lib directory"
-    fi
-    if [ -d "$cloudPackageDir/plugins" ]
-    then
-        cp -Rv "$cloudPackageDir/plugins" "$cloudDir"
-        assert_success $? "Failed to copy plugins directory"
-    fi
-
-    # MacOS specific directories
-    if [ -d "$cloudPackageDir/Frameworks" ]
-    then
-        cp -Rv "$cloudPackageDir/Frameworks" "$cloudDir"
-        assert_success $? "Failed to copy Frameworks directory"
-    fi
-    if [ -d "$cloudPackageDir/PlugIns" ]
-    then
-        cp -Rv "$cloudPackageDir/PlugIns" "$cloudDir"
-        assert_success $? "Failed to copy PlugIns directory"
-    fi
-fi
+$myPath/cloud_update_software.sh --cloud-directory="$cloudDir"
 
 if [ -z "$fileStore" ]
 then
