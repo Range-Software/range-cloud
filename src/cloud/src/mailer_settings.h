@@ -15,7 +15,7 @@ class MailerSettings : public ServiceSettings
 
         //! From address.
         QString fromAddress;
-        //! Send timeout in miliseconds.
+        //! Send timeout in milliseconds.
         int sendTimeout;
 
     public:
@@ -38,7 +38,7 @@ class MailerSettings : public ServiceSettings
         //! Set new from address.
         void setFromAddress(const QString &fromAddress);
 
-        //! Return send timeout;
+        //! Return send timeout.
         int getSendTimeout() const;
 
         //! Set new send timeout.

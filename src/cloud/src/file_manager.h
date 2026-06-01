@@ -26,7 +26,7 @@ class FileManager : public RJob
 
         //! File manager settings.
         FileManagerSettings settings;
-        //! File manager satistics.
+        //! File manager statistics.
         FileManagerStatistics statistics;
 
         //! User manager service.
@@ -110,7 +110,7 @@ class FileManager : public RJob
         //! Enqueue task.
         QUuid enqueueTask(const FileManagerTask &task);
 
-        //! Build abolute path to file in stroe.
+        //! Build absolute path to file in store.
         QString findFilePath(const RFileInfo &fileInfo) const;
 
         //! List files.

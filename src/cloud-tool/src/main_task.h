@@ -26,10 +26,10 @@ class MainTask : public QObject
         //! Run task.
         void run();
 
-        //! Task has finished.
+        //! Action has finished.
         void actionFinished(const QSharedPointer<RToolAction> &action);
 
-        //! Task has failed.
+        //! Action has failed.
         void actionFailed(const QSharedPointer<RToolAction> &action);
 
         //! Task has finished.

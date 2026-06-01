@@ -21,7 +21,7 @@ class ProcessManagerSettings : public ServiceSettings
         QString workingDirectory;
         //! Path to processes directory.
         QString processesDirectory;
-        //! Path to file name.
+        //! Processes file name.
         QString processesFileName;
         //! Path to Range CA directory.
         QString rangeCaDirectory;
@@ -40,19 +40,19 @@ class ProcessManagerSettings : public ServiceSettings
         //! Assignment operator.
         ProcessManagerSettings &operator =(const ProcessManagerSettings &processManagerSettings);
 
-        //! get const reference to log directory path.
+        //! Get const reference to log directory path.
         const QString &getLogDirectory() const;
 
         //! Set new log directory path.
         void setLogDirectory(const QString &logDirectory);
 
-        //! get const reference to working directory path.
+        //! Get const reference to working directory path.
         const QString &getWorkingDirectory() const;
 
         //! Set new working directory path.
         void setWorkingDirectory(const QString &workingDirectory);
 
-        //! get const reference to processes directory path.
+        //! Get const reference to processes directory path.
         const QString &getProcessesDirectory() const;
 
         //! Set new processes directory path.
@@ -64,10 +64,10 @@ class ProcessManagerSettings : public ServiceSettings
         //! Set new processes file name.
         void setProcessesFileName(const QString &processesFileName);
 
-        //! get const reference to Range CA directory path.
+        //! Get const reference to Range CA directory path.
         const QString &getRangeCaDirectory() const;
 
-        //! Set new processes Range CA path.
+        //! Set new Range CA directory path.
         void setRangeCaDirectory(const QString &rangeCaDirectory);
 
 };

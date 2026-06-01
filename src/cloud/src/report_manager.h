@@ -18,7 +18,7 @@ class ReportManager : public QObject
     protected:
 
         ReportManagerSettings settings;
-        //! Service satistics.
+        //! Service statistics.
         ServiceStatistics statistics;
 
         uint64_t nReportsSubmitted;

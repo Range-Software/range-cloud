@@ -21,7 +21,7 @@ class ProcessManager : public QObject
 
         //! Settings.
         ProcessManagerSettings settings;
-        //! Service satistics.
+        //! Service statistics.
         ServiceStatistics statistics;
         //! List of users.
         QList<RCloudProcessInfo> processes;
@@ -32,7 +32,7 @@ class ProcessManager : public QObject
 
     public:
 
-        //! Constructor
+        //! Constructor.
         explicit ProcessManager(const ProcessManagerSettings &settings, QObject *parent = nullptr);
 
         //! Check if given process is in the manager.
@@ -59,7 +59,7 @@ class ProcessManager : public QObject
         //! Submit process.
         QUuid submitProcess(const RCloudProcessRequest &processRequest);
 
-        //! Finalize process (remove from finished list)
+        //! Finalize process (remove from finished list).
         void finalizeProcess(const QUuid &id);
 
         //! Get statistics output in Json form.

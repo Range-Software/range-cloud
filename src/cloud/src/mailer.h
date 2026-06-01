@@ -26,7 +26,7 @@ class Mailer : public RJob
 
         //! Settings.
         MailerSettings settings;
-        //! Service satistics.
+        //! Service statistics.
         ServiceStatistics statistics;
 
         //! Flag signaling to stop service.

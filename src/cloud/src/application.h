@@ -67,21 +67,21 @@ class Application : public QCoreApplication
 
         //! File manager.
         FileManager *fileManager;
-        //! File service is ready;
+        //! File service is ready.
         bool fileServiceIsReady;
 
         //! Mailer.
         Mailer *mailer;
-        //! File service is ready;
+        //! Mailer service is ready.
         bool mailerServiceIsReady;
 
-        //! Acton handler.
+        //! Action handler.
         ActionHandler *actionHandler;
 
         //! Number of started services.
         uint nStartedServices;
 
-        //! Map of action IDs to messages
+        //! Map of action IDs to messages.
         QMap<QUuid, RNetworkMessage> actionToMessageMap;
 
     public:
@@ -126,7 +126,7 @@ class Application : public QCoreApplication
         //! Public HTTP server is ready.
         void publicHttpServiceReady();
 
-        //! Public HTTP server has finished.
+        //! Public HTTP server has started.
         void publicHttpServiceStarted();
 
         //! Public HTTP server has stopped.
@@ -138,7 +138,7 @@ class Application : public QCoreApplication
         //! Private HTTP server is ready.
         void privateHttpServiceReady();
 
-        //! Private HTTP server has finished.
+        //! Private HTTP server has started.
         void privateHttpServiceStarted();
 
         //! Private HTTP server has stopped.
@@ -150,7 +150,7 @@ class Application : public QCoreApplication
         //! File manager is ready.
         void fileServiceReady();
 
-        //! File manager has finished.
+        //! File manager has started.
         void fileServiceStarted();
 
         //! File manager has finished.
@@ -162,7 +162,7 @@ class Application : public QCoreApplication
         //! Mailer is ready.
         void mailerServiceReady();
 
-        //! Mailer has finished.
+        //! Mailer has started.
         void mailerServiceStarted();
 
         //! Mailer has finished.

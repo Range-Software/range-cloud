@@ -475,9 +475,9 @@ RError::Type FileManager::replaceFile(const RUserInfo &executor, const FileObjec
         [=](const RFileInfo &fileInfo)
         {
 
-            return (fileInfo.getPath() == object.getInfo().getPath() && // File paths must be equal
-                    executor.isUser(fileInfo.getAccessRights().getOwner().getUser()) && // File must be owned by the executor
-                    UserManager::authorizeUserAccess(executor,fileInfo.getAccessRights(),RAccessMode::Write)); // File must be writable
+            return (fileInfo.getPath() == object.getInfo().getPath() && // File paths must be equal.
+                    executor.isUser(fileInfo.getAccessRights().getOwner().getUser()) && // File must be owned by the executor.
+                    UserManager::authorizeUserAccess(executor,fileInfo.getAccessRights(),RAccessMode::Write)); // File must be writable.
         }
     );
 

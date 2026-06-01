@@ -269,7 +269,7 @@ QJsonObject ProcessManager::toJson() const
 {
     QJsonObject json;
 
-    // Users
+    // Processes
     QJsonArray processesArray;
     for (const RCloudProcessInfo &processInfo : this->processes)
     {

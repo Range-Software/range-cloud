@@ -52,12 +52,25 @@ void MainTask::actionFinished(const QSharedPointer<RToolAction> &action)
     RHttpMessage responseMessage = action.staticCast<RCloudToolAction>().data()->getResponseMessage();
     RLogger::info("Action has finished.\n");
 
+    const QString &outputFileName = Application::instance()->getOutputFileName();
+
     switch (action.staticCast<RCloudToolAction>().data()->getType())
     {
         case RCloudToolAction::Test:
         {
-            RLogger::info("Connection test response:\n");
-            RLogger::info("%s\n",RCloudToolAction::processTestResponse(responseMessage.getBody()).toUtf8().constData());
+            if (!outputFileName.isEmpty())
+            {
+                if (!RFileTools::writeAsciiFile(outputFileName,responseMessage.getBody().constData()))
+                {
+                    RLogger::error("Failed to write action output to file \"%s\".\n", outputFileName.toUtf8().constData());
+                }
+            }
+            else
+            {
+                RLogger::info("Connection test response:\n");
+                RLogger::info("%s\n",RCloudToolAction::processTestResponse(responseMessage.getBody()).toUtf8().constData());
+            }
+
             break;
         }
         case RCloudToolAction::FileDownload:
@@ -71,8 +84,18 @@ void MainTask::actionFinished(const QSharedPointer<RToolAction> &action)
         }
         default:
         {
-            RLogger::info("Unhandled action response:\n");
-            RLogger::info("%s\n",responseMessage.getBody().constData());
+            if (!outputFileName.isEmpty())
+            {
+                if (!RFileTools::writeAsciiFile(outputFileName,responseMessage.getBody().constData()))
+                {
+                    RLogger::error("Failed to write action output to file \"%s\".\n", outputFileName.toUtf8().constData());
+                }
+            }
+            else
+            {
+                RLogger::info("Unhandled action response:\n");
+                RLogger::info("%s\n",responseMessage.getBody().constData());
+            }
         }
     }
 

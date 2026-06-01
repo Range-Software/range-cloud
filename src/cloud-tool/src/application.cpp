@@ -20,7 +20,7 @@ Application::Application(int &argc, char **argv)
     , httpClient(nullptr)
     , nStartedServices(0)
 {
-    // Needed for printf functions family to work correctly.
+    // Needed for the printf function family to work correctly.
     setlocale(LC_ALL,"C");
 
     qRegisterMetaType<RCloudAction>();
@@ -29,11 +29,18 @@ Application::Application(int &argc, char **argv)
     QTimer::singleShot(0, this, SIGNAL(started()));
 }
 
+Application *Application::instance() noexcept
+{
+    return qobject_cast<Application*>(QCoreApplication::instance());
+}
+
 void Application::onStarted()
 {
     try {
-        // Process command line arguments.
+        // Process command-line arguments.
         QList<RArgumentOption> validOptions;
+
+        validOptions.append(RArgumentOption("output-file",RArgumentOption::Path,QVariant(),"File name into which action output will printed to",RArgumentOption::Logger,false));
 
         validOptions.append(RArgumentOption("log-file",RArgumentOption::Path,QVariant(),"Log file name",RArgumentOption::Logger,false));
         validOptions.append(RArgumentOption("log-debug",RArgumentOption::Switch,QVariant(),"Switch on debug log level",RArgumentOption::Logger,false));
@@ -131,6 +138,11 @@ void Application::onStarted()
             RLogger::getInstance().setFile(argumentsParser.getValue("log-file").toString());
         }
 
+        if (argumentsParser.isSet("output-file"))
+        {
+            this->outputFileName = argumentsParser.getValue("output-file").toString();
+        }
+
         QString address = argumentsParser.getValue("address").toString();
         uint httpPort = argumentsParser.getValue("http-port").toUInt();
 
@@ -144,7 +156,7 @@ void Application::onStarted()
         QString clientPassword = argumentsParser.getValue("private-key-password").toString();
         QString caPublicKey = argumentsParser.getValue("host-key").toString();
 
-        // HTTP Client
+        // HTTP client.
         RHttpClientSettings httpClientSettings;
         httpClientSettings.setUrl(RHttpClient::buildUrl(address,httpPort));
         if (!proxyHost.isEmpty())
@@ -402,6 +414,11 @@ void Application::onStarted()
 const RToolInput &Application::getToolInput() const
 {
     return this->toolInput;
+}
+
+const QString &Application::getOutputFileName() const
+{
+    return this->outputFileName;
 }
 
 void Application::disconnect()

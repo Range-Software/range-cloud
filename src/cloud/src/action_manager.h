@@ -17,14 +17,14 @@ class ActionManager : public QObject
     protected:
 
         ActionManagerSettings settings;
-        //! Service satistics.
+        //! Service statistics.
         ServiceStatistics statistics;
         //! List of users.
         QList<RCloudActionInfo> actions;
 
     public:
 
-        //! Constructor
+        //! Constructor.
         explicit ActionManager(const ActionManagerSettings &settings, QObject *parent = nullptr);
 
         //! Check if given action is in the manager.

@@ -55,7 +55,7 @@ Application::Application(int &argc, char **argv) :
     this->fileServiceIsReady = false;
     this->mailerServiceIsReady = false;
 
-    // Needed for printf functions cloud to work correctly.
+    // Needed for the printf function family to work correctly.
     setlocale(LC_ALL,"C");
 
     QCoreApplication::setOrganizationName(RVendor::familyName());
@@ -154,7 +154,7 @@ void Application::onStarted()
     RLogger::getInstance().setPrintTimeEnabled(true);
 
     try {
-        // Process command line arguments.
+        // Process command-line arguments.
         QList<RArgumentOption> validOptions;
 
         validOptions.append(RArgumentOption(Application::cloudDirectoryKey,RArgumentOption::Path,Configuration::getDefaultCloudDirectoryPath(),"Path to cloud data direcory.",RArgumentOption::File,false));

@@ -29,7 +29,7 @@ class ActionHandler : public QObject
         ProcessManager *processManager;
         //! Pointer to file manager.
         FileManager *fileManager;
-        //! Pointer to process manager.
+        //! Pointer to report manager.
         ReportManager *reportManager;
         //! Pointer to mailer.
         Mailer *mailer;

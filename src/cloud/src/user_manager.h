@@ -42,7 +42,7 @@ class UserManager : public QObject
     protected:
 
         UserManagerSettings settings;
-        //! Service satistics.
+        //! Service statistics.
         ServiceStatistics statistics;
         //! List of users.
         QList<RUserInfo> users;
@@ -79,7 +79,7 @@ class UserManager : public QObject
         //! Find token.
         RAuthToken findToken(const QString &resourceName, const QString &content) const;
 
-        //! Find token bu its ID.
+        //! Find token by its ID.
         RAuthToken findToken(const QUuid &id) const;
 
         //! Add new user.

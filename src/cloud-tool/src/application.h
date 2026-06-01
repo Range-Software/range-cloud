@@ -23,13 +23,22 @@ class Application : public QCoreApplication
         //! Tool input.
         RToolInput toolInput;
 
+        //! Action output file name.
+        QString outputFileName;
+
     public:
 
         //! Constructor.
         explicit Application(int &argc, char **argv);
 
+        //! Return application instance.
+        static Application *instance() noexcept;
+
         //! Return const reference to tool input.
         const RToolInput &getToolInput() const;
+
+        //! Return const reference to an action output file name.
+        const QString &getOutputFileName() const;
 
         //! Disconnect all running clients.
         void disconnect();
