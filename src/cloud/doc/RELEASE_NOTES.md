@@ -1,7 +1,6 @@
-------------------------------------------------------------------
-Version 1.0.4
+## Version 1.0.4
 
-Bug fixes:
+### Bug Fixes
 
 - Fix SSL error on macOS by seeding system CA certificates
 
@@ -12,26 +11,29 @@ Bug fixes:
 - range-build-tools @ v1.0.0
 - range-cloud-lib @ v1.0.0
 
-------------------------------------------------------------------
-Version 1.0.3
+---
+
+## Version 1.0.3
 
 - Fixed various memory leaks
 
-------------------------------------------------------------------
-Version 1.0.2
+---
+
+## Version 1.0.2
 
 - Improved HTTP server thread safety, timeout handling, and resource cleanup
 - Added certificate expiry validation to RHttpServer and RHttpClient
 - Added script to renew expired certificate for local accounts
 - Log Qt debug messages
 
-------------------------------------------------------------------
-Version 1.0.1
+---
+
+## Version 1.0.1
 
 - Print Qt library and core application info on startup
 
-------------------------------------------------------------------
-Version 1.0.0
+---
+
+## Version 1.0.0
 
 Initial release.
-
