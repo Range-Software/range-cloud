@@ -40,6 +40,7 @@ void Configuration::_init(const Configuration *pConfiguration)
         this->publicHttpPort = pConfiguration->publicHttpPort;
         this->privateHttpPort = pConfiguration->privateHttpPort;
         this->rateLimitPerSecond = pConfiguration->rateLimitPerSecond;
+        this->maxBodySize = pConfiguration->maxBodySize;
         this->publicKey = pConfiguration->publicKey;
         this->privateKey = pConfiguration->privateKey;
         this->privateKeyPassword = pConfiguration->privateKeyPassword;
@@ -59,6 +60,7 @@ Configuration::Configuration(const QString &cloudDirectory)
     , publicHttpPort{Configuration::getDefaultPublicHttpPort()}
     , privateHttpPort{Configuration::getDefaultPrivateHttpPort()}
     , rateLimitPerSecond{Configuration::getDefaultRateLimitPerSecond()}
+    , maxBodySize{Configuration::getMaxBodySize()}
     , publicKey{Configuration::getDefaultPublicKeyPath(this->cloudDirectory)}
     , privateKey{Configuration::getDefaultPrivateKeyPath(this->cloudDirectory)}
     , privateKeyPassword{QString()}
@@ -131,6 +133,16 @@ quint32 Configuration::getRateLimitPerSecond() const
 void Configuration::setRateLimitPerSecond(quint32 rateLimitPerSecond)
 {
     this->rateLimitPerSecond = rateLimitPerSecond;
+}
+
+qint64 Configuration::getMaxBodySize() const
+{
+    return this->maxBodySize;
+}
+
+void Configuration::setMaxBodySize(qint64 maxBodySize)
+{
+    this->maxBodySize = maxBodySize;
 }
 
 const QString &Configuration::getPublicKey() const
@@ -325,6 +337,10 @@ void Configuration::fromJson(const QJsonObject &json)
     {
         this->rateLimitPerSecond = v.toString().toUInt();
     }
+    if (const QJsonValue &v = json["maxBodySize"]; v.isString())
+    {
+        this->maxBodySize = v.toString().toLongLong();
+    }
     if (const QJsonValue &v = json["publicKey"]; v.isString())
     {
         this->publicKey = v.toString();
@@ -376,6 +392,7 @@ QJsonObject Configuration::toJson() const
     json["publicHttpPort"] = QString::number(this->publicHttpPort);
     json["privateHttpPort"] = QString::number(this->privateHttpPort);
     json["rateLimitPerSecond"] = QString::number(this->rateLimitPerSecond);
+    json["maxBodySize"] = QString::number(this->maxBodySize);
     json["publicKey"] = this->publicKey;
     json["privateKey"] = this->privateKey;
     json["privateKeyPassword"] = this->privateKeyPassword;
@@ -556,6 +573,11 @@ uint Configuration::getDefaultPrivateHttpPort()
 quint32 Configuration::getDefaultRateLimitPerSecond()
 {
     return RHttpServerSettings::defaultRateLimitPerSecond;
+}
+
+qint64 Configuration::getDefaultMaxBodySize()
+{
+    return RHttpServerSettings::defaultMaxBodySize;
 }
 
 QString Configuration::getDefaultPrivateKeyPath(const QString &cloudDirectoryPath)

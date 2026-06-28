@@ -40,6 +40,7 @@ class Configuration
         uint privateHttpPort;
 
         quint32 rateLimitPerSecond;
+        qint64 maxBodySize;
 
         QString publicKey;
         QString privateKey;
@@ -80,6 +81,9 @@ class Configuration
 
         quint32 getRateLimitPerSecond() const;
         void setRateLimitPerSecond(quint32 rateLimitPerSecond);
+
+        qint64 getMaxBodySize() const;
+        void setMaxBodySize(qint64 maxBodySize);
 
         const QString &getPublicKey() const;
         void setPublicKey(const QString &publicKey);
@@ -240,6 +244,9 @@ class Configuration
 
         //! Get default maximum number of incoming requests per second per IP accepted by the server.
         static quint32 getDefaultRateLimitPerSecond();
+
+        //! Get default maximum maximum body size accepted by the server.
+        static qint64 getDefaultMaxBodySize();
 
         //! Get default private key file path.
         static QString getDefaultPrivateKeyPath(const QString &cloudDirectoryPath = Configuration::getDefaultCloudDirectoryPath());
