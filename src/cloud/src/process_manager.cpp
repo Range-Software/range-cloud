@@ -282,42 +282,71 @@ QJsonObject ProcessManager::toJson() const
 
 void ProcessManager::onProcessErrorOccurred(QUuid id, QProcess::ProcessError error)
 {
-    this->statistics.recordCounter(this->runningProcesses.value(id)->getProcessInfo().getName() + "Errored",1);
+    // Qt may emit both errorOccurred and finished for the same process, so the
+    // entry can already have been moved out of runningProcesses by a sibling slot.
+    QSharedPointer<Process> process = this->runningProcesses.value(id);
+    if (process.isNull())
+    {
+        RLogger::warning("[%s] Error occured for unknown or already finished process id = \"%s\".\n",
+                         this->settings.getName().toUtf8().constData(),
+                         id.toString(QUuid::WithoutBraces).toUtf8().constData());
+        return;
+    }
+
+    this->statistics.recordCounter(process->getProcessInfo().getName() + "Errored",1);
     RLogger::error("[%s] Error occured id = \"%s\" with error \"%s\".\n",
                    this->settings.getName().toUtf8().constData(),
                    id.toString(QUuid::WithoutBraces).toUtf8().constData(),
                    Process::processErrorToString(error).toUtf8().constData());
 
-    this->runningProcesses.value(id);
-    this->finishedProcesses.insert(id,this->runningProcesses.value(id));
+    this->finishedProcesses.insert(id,process);
     this->runningProcesses.remove(id);
 
-    emit this->processCompleted(id,this->finishedProcesses.value(id)->getProcessResult());
+    emit this->processCompleted(id,process->getProcessResult());
 }
 
 void ProcessManager::onProcessFinished(QUuid id, int exitCode, QProcess::ExitStatus exitStatus)
 {
-    this->statistics.recordCounter(this->runningProcesses.value(id)->getProcessInfo().getName() + (exitStatus == QProcess::NormalExit ? "Finished" : "Crashed"),1);
+    // Qt may emit both errorOccurred and finished for the same process, so the
+    // entry can already have been moved out of runningProcesses by a sibling slot.
+    QSharedPointer<Process> process = this->runningProcesses.value(id);
+    if (process.isNull())
+    {
+        RLogger::warning("[%s] Finished signal for unknown or already finished process id = \"%s\".\n",
+                         this->settings.getName().toUtf8().constData(),
+                         id.toString(QUuid::WithoutBraces).toUtf8().constData());
+        return;
+    }
+
+    this->statistics.recordCounter(process->getProcessInfo().getName() + (exitStatus == QProcess::NormalExit ? "Finished" : "Crashed"),1);
     RLogger::info("[%s] Finished id = \"%s\" with exit code \"%d\" and exit status \"%s\".\n",
                   this->settings.getName().toUtf8().constData(),
                   id.toString(QUuid::WithoutBraces).toUtf8().constData(),
                   exitCode,
                   exitStatus == QProcess::NormalExit ? "Normal exit" : "Crash exit");
 
-    this->runningProcesses.value(id);
-    this->finishedProcesses.insert(id,this->runningProcesses.value(id));
+    this->finishedProcesses.insert(id,process);
     this->runningProcesses.remove(id);
 
-    emit this->processCompleted(id,this->finishedProcesses.value(id)->getProcessResult());
+    emit this->processCompleted(id,process->getProcessResult());
 }
 
 void ProcessManager::onProcessStarted(QUuid id)
 {
-    this->statistics.recordCounter(this->runningProcesses.value(id)->getProcessInfo().getName() + "Started",1);
+    QSharedPointer<Process> process = this->runningProcesses.value(id);
+    if (process.isNull())
+    {
+        RLogger::warning("[%s] Started signal for unknown process id = \"%s\".\n",
+                         this->settings.getName().toUtf8().constData(),
+                         id.toString(QUuid::WithoutBraces).toUtf8().constData());
+        return;
+    }
+
+    this->statistics.recordCounter(process->getProcessInfo().getName() + "Started",1);
     RLogger::info("[%s] Started id = \"%s\" command = \"%s\".\n",
                   this->settings.getName().toUtf8().constData(),
                   id.toString(QUuid::WithoutBraces).toUtf8().constData(),
-                  this->runningProcesses.value(id)->getProcessInfo().buildCommand().toUtf8().constData());
+                  process->getProcessInfo().buildCommand().toUtf8().constData());
 }
 
 void ProcessManager::onProcessStateChanged(QUuid id, QProcess::ProcessState newState)

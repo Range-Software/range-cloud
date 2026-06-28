@@ -4,6 +4,10 @@
 
 - Added max body size configuration to http server
 
+### Bug Fixes
+
+- Guard process signal handlers against double-emit/use-after-move crash
+
 ### Submodules
 
 - range-ai-lib @ v1.0.0
