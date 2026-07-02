@@ -129,6 +129,8 @@ RCloudActionInfo ActionManager::updateActionAccessRights(const QString &name, co
                           name.toUtf8().constData(),
                           accessRights.toString().toUtf8().constData());
             this->actions[i].setAccessRights(accessRights);
+            // Persist immediately; access rights must survive a crash.
+            this->writeFile();
             return this->actions[i];
         }
     }

@@ -24,43 +24,41 @@ int Mailer::perform()
         this->serviceMutex.lock();
         emit this->ready();
 
-        bool safeStopFlag = false;
-        while (!safeStopFlag)
+        this->syncMutex.lock();
+        while (!this->stopFlag)
         {
-            RLogger::trace("[%s] Loop\n",this->settings.getName().toUtf8().constData());
-            this->syncMutex.lock();
-
-            if (!this->emails.empty())
+            if (this->emails.empty())
             {
-                RLogger::trace("[%s] Processing mail\n",this->settings.getName().toUtf8().constData());
-
-                Mail email = this->emails.dequeue();
-
-                if (this->sendMail(email))
-                {
-                    this->statistics.recordCounter("Sent",1);
-                    RLogger::info("[%s] Email to \"%s\" with subject \"%s\" has been successfully sent.\n",
-                                  this->settings.getName().toUtf8().constData(),
-                                  email.toAddress.toUtf8().constData(),
-                                  email.subject.toUtf8().constData());
-                }
-                else
-                {
-                    this->statistics.recordCounter("Failed",1);
-                    RLogger::warning("[%s] Sending email to \"%s\" with subject \"%s\" has timed out.\n",
-                                     this->settings.getName().toUtf8().constData(),
-                                     email.toAddress.toUtf8().constData(),
-                                     email.subject.toUtf8().constData());
-                }
+                this->queueCondition.wait(&this->syncMutex);
+                continue;
             }
 
-            safeStopFlag = this->stopFlag;
+            RLogger::trace("[%s] Processing mail\n",this->settings.getName().toUtf8().constData());
 
+            Mail email = this->emails.dequeue();
+
+            // Send without holding the queue lock so producers are not blocked.
             this->syncMutex.unlock();
 
-            QThread::msleep(1000);
+            if (this->sendMail(email))
+            {
+                this->statistics.recordCounter("Sent",1);
+                RLogger::info("[%s] Email to \"%s\" with subject \"%s\" has been successfully sent.\n",
+                              this->settings.getName().toUtf8().constData(),
+                              email.toAddress.toUtf8().constData(),
+                              email.subject.toUtf8().constData());
+            }
+            else
+            {
+                this->statistics.recordCounter("Failed",1);
+                RLogger::warning("[%s] Sending email to \"%s\" with subject \"%s\" has timed out.\n",
+                                 this->settings.getName().toUtf8().constData(),
+                                 email.toAddress.toUtf8().constData(),
+                                 email.subject.toUtf8().constData());
+            }
+
+            this->syncMutex.lock();
         }
-        this->syncMutex.lock();
         this->stopFlag = false;
         this->syncMutex.unlock();
         this->serviceMutex.unlock();
@@ -84,6 +82,7 @@ void Mailer::stop()
                   this->settings.getName().toUtf8().constData());
     this->syncMutex.lock();
     this->stopFlag = true;
+    this->queueCondition.wakeAll();
     this->syncMutex.unlock();
 
     while (!this->serviceMutex.tryLock())
@@ -108,15 +107,17 @@ bool Mailer::sendMail(const Mail &mail)
     R_LOG_TRACE_IN;
     QString program = "sendmail";
     QStringList arguments;
-    arguments << "-t" << mail.toAddress;
+    arguments << mail.toAddress;
 
     QString messageContent;
     if (!this->settings.getFromAddress().isEmpty())
     {
-        messageContent += "From:" + this->settings.getFromAddress() + "\n";
+        messageContent += "From: " + this->settings.getFromAddress() + "\n";
     }
-    messageContent += "Subject:" + mail.subject + "\n";
-    messageContent += "Body:\n" + mail.body + "\n";
+    messageContent += "To: " + mail.toAddress + "\n";
+    messageContent += "Subject: " + mail.subject + "\n";
+    messageContent += "\n";
+    messageContent += mail.body + "\n";
 
     QProcess sendMail;
     sendMail.start(program,arguments);
@@ -134,6 +135,9 @@ void Mailer::submitMail(const QString &toAddress, const QString &subject, const 
     mail.subject = subject;
     mail.body = body;
 
+    this->syncMutex.lock();
     this->emails.enqueue(mail);
+    this->queueCondition.wakeAll();
+    this->syncMutex.unlock();
     R_LOG_TRACE_OUT;
 }

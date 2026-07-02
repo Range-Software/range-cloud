@@ -98,6 +98,8 @@ RCloudProcessInfo ProcessManager::updateProcessAccessRights(const QString &name,
                           name.toUtf8().constData(),
                           accessRights.toString().toUtf8().constData());
             this->processes[i].setAccessRights(accessRights);
+            // Persist immediately; access rights must survive a crash.
+            this->writeFile();
             return this->processes[i];
         }
     }

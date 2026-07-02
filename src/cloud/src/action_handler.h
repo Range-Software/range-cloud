@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QDateTime>
 #include <QSharedPointer>
 
 #include <rcl_cloud_action.h>
@@ -38,6 +39,8 @@ class ActionHandler : public QObject
         QMap<QUuid,QUuid> fileRequests;
         //! Map of process requests.
         QMap<QUuid,QUuid> processRequests;
+        //! Service start time (for uptime statistics).
+        QDateTime startTime;
 
     public:
 

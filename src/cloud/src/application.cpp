@@ -3,6 +3,7 @@
 
 #include <QDir>
 #include <QLoggingCategory>
+#include <QThreadPool>
 #include <QTimer>
 #include <QSettings>
 #include <QStandardPaths>
@@ -73,8 +74,8 @@ Application::~Application()
 {
     delete this->publicHttpServer;
     delete this->privateHttpServer;
-    delete this->fileManager;
-    delete this->mailer;
+    // fileManager and mailer are owned by RJobManager once submitted; it
+    // deletes finished jobs itself, so deleting them here would double-free.
 }
 
 void Application::serviceStarted()
@@ -314,6 +315,12 @@ void Application::onStarted()
 
         RLogger::info("[Application] Starting services\n");
         RLogger::info("[Application] Ideal thread count: %d\n",QThread::idealThreadCount());
+
+        // FileManager and Mailer are long-running jobs that permanently occupy
+        // two global-pool threads, and every HTTP request also runs on the
+        // global pool. Grow the pool so request processing can never be
+        // starved (on small machines the default pool would deadlock).
+        QThreadPool::globalInstance()->setMaxThreadCount(qMax(QThread::idealThreadCount(),4) + 2);
 
         // User manager service
         UserManagerSettings userManagerSettings;

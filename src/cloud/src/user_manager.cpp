@@ -32,7 +32,9 @@ bool UserManager::AuthTokenValidator::validate(const QString &resourceName, cons
     }
     catch (const RError &rError)
     {
-        RLogger::error("[UserTokenAuthenticator] Failed to remove used authentication token \"%s\"\n");
+        RLogger::error("[UserTokenAuthenticator] Failed to remove used authentication token \"%s\". %s\n",
+                       authToken.getId().toString(QUuid::WithoutBraces).toUtf8().constData(),
+                       rError.getMessage().toUtf8().constData());
     }
 
     return isValid;
@@ -220,6 +222,11 @@ void UserManager::setUser(const QString &userName, const RUserInfo &user)
         throw RError(RError::Type::InvalidInput,R_ERROR_REF,"User is not valid.");
     }
 
+    if (user.getName() != userName && this->containsUser(user.getName()))
+    {
+        throw RError(RError::Type::InvalidInput,R_ERROR_REF,"User with name \"%s\" already exists.",user.getName().toUtf8().constData());
+    }
+
     for (const QString &groupName : user.getGroupNames())
     {
         if (!this->containsGroup(groupName))
@@ -325,8 +332,10 @@ void UserManager::removeGroup(const QString &name)
         RGroupInfo g = i.next();
         if (g.getName() == name) {
             i.remove();
-            emit this->changed();
+            // Strip the group from users first (onGroupRemoved) so that
+            // changed() persists the fully updated state.
             emit this->groupRemoved(g);
+            emit this->changed();
             return;
         }
     }
@@ -507,7 +516,7 @@ QJsonObject UserManager::getStatisticsJson() const
     RLogger::debug("[%s] Producting statistics\n",this->settings.getName().toUtf8().constData());
     ServiceStatistics snapshotStatistics(this->statistics);
     snapshotStatistics.recordCounter("users",this->users.size());
-    snapshotStatistics.recordCounter("users",this->groups.size());
+    snapshotStatistics.recordCounter("groups",this->groups.size());
     return snapshotStatistics.toJson();
 }
 

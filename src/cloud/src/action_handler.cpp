@@ -21,6 +21,7 @@ ActionHandler::ActionHandler(UserManager *userManager,
     , fileManager{fileManager}
     , reportManager{reportManager}
     , mailer{mailer}
+    , startTime{QDateTime::currentDateTimeUtc()}
 {
     R_LOG_TRACE_IN;
     QObject::connect(this->fileManager,&FileManager::requestCompleted,this,&ActionHandler::onFileRequestCompleted);
@@ -33,8 +34,6 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
     R_LOG_TRACE_IN;
 
     RLogger::debug("[ActionHandler] Resolving action \"%s\".\n",action.getAction().toUtf8().constData());
-
-    static QDateTime startTime = QDateTime::currentDateTimeUtc();
 
     QString executorUser = action.getExecutor();
     if (executorUser.isEmpty())
@@ -472,7 +471,7 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
                 !executorInfo.isUser(RUserInfo::rootUser) &&
                 !executorInfo.hasGroup(RUserInfo::rootGroup))
             {
-                QString message = QString("%1. User \"%2\" is not alowed to list authentication tokens with resource name \"%2\".").arg(
+                QString message = QString("%1. User \"%2\" is not alowed to list authentication tokens with resource name \"%3\".").arg(
                     RError::getTypeMessage(RError::Unauthorized),
                     executorInfo.getName(),
                     action.getResourceName());
@@ -516,7 +515,7 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
                 !executorInfo.isUser(RUserInfo::rootUser) &&
                 !executorInfo.hasGroup(RUserInfo::rootGroup))
             {
-                QString message = QString("%1. User \"%2\" is not alowed to generate authentication token with resource name \"%2\".").arg(
+                QString message = QString("%1. User \"%2\" is not alowed to generate authentication token with resource name \"%3\".").arg(
                     RError::getTypeMessage(RError::Unauthorized),
                     executorInfo.getName(),
                     action.getResourceName());
@@ -561,9 +560,21 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
                 !executorInfo.isUser(RUserInfo::rootUser) &&
                 !executorInfo.hasGroup(RUserInfo::rootGroup))
             {
-                QString message = QString("%1. User \"%2\" is not alowed to remove authentication token with resource name \"%2\".").arg(
+                QString message = QString("%1. User \"%2\" is not alowed to remove authentication token with resource name \"%3\".").arg(
                     RError::getTypeMessage(RError::Unauthorized),
                     executorInfo.getName(),
+                    action.getResourceName());
+                throw RError(RError::Unauthorized,R_ERROR_REF,message);
+            }
+
+            // The token being removed must actually belong to the resource
+            // name the executor was authorized against.
+            RAuthToken tokenToRemove = this->userManager->findToken(action.getResourceId());
+            if (tokenToRemove.isNull() || tokenToRemove.getResourceName() != action.getResourceName())
+            {
+                QString message = QString("%1. Token \"%2\" does not belong to resource name \"%3\".").arg(
+                    RError::getTypeMessage(RError::Unauthorized),
+                    action.getResourceId().toString(QUuid::WithoutBraces),
                     action.getResourceName());
                 throw RError(RError::Unauthorized,R_ERROR_REF,message);
             }
@@ -837,6 +848,13 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
     else
     {
         RLogger::error("[ActionHandler] Unknown private action: \"%s\"\n",action.getAction().toUtf8().constData());
+
+        // Always resolve the action so the HTTP handler is answered and the
+        // application can release the pending message for this action ID.
+        RCloudAction resolvedAction(action);
+        resolvedAction.setData(QString("Unknown action \"%1\".").arg(action.getAction()).toUtf8());
+        resolvedAction.setErrorType(RError::InvalidInput);
+        emit this->resolved(resolvedAction);
     }
     R_LOG_TRACE_OUT;
 }

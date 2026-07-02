@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QQueue>
+#include <QWaitCondition>
 
 #include <rbl_job.h>
 
@@ -37,6 +38,8 @@ class Mailer : public RJob
 
         QMutex syncMutex;
         QMutex serviceMutex;
+        //! Signaled when an email is enqueued or stop is requested.
+        QWaitCondition queueCondition;
 
     public:
 

@@ -1,4 +1,5 @@
 #include <QDir>
+#include <QCryptographicHash>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -32,20 +33,29 @@ int FileManager::perform()
         this->serviceMutex.lock();
         emit this->ready();
 
-        bool safeStopFlag = false;
-        while (!safeStopFlag)
+        this->syncMutex.lock();
+        while (!this->stopFlag)
         {
-            RLogger::trace("[%s] Loop\n",this->settings.getName().toUtf8().constData());
-            this->syncMutex.lock();
-
-            if (!this->tasks.isEmpty())
+            if (this->tasks.isEmpty())
             {
-                RLogger::trace("[%s] Processing task\n",this->settings.getName().toUtf8().constData());
+                this->taskCondition.wait(&this->syncMutex);
+                continue;
+            }
 
+            RLogger::trace("[%s] Processing task\n",this->settings.getName().toUtf8().constData());
+
+            FileManagerTask task = this->tasks.dequeue();
+
+            // Process without holding the queue lock so enqueueTask() (main
+            // thread) is never blocked behind disk I/O.
+            this->syncMutex.unlock();
+
+            {
                 bool writeIndex = false;
-                FileManagerTask task = this->tasks.dequeue();
                 RError::Type resultErrorType = RError::None;
                 QByteArray result;
+
+                QMutexLocker dataLocker(&this->dataMutex);
 
                 if (task.getAction() == FileManagerTask::Action::ListFiles)
                 {
@@ -125,7 +135,6 @@ int FileManager::perform()
                     }
                     catch (const RError &error)
                     {
-                        R_LOG_TRACE_OUT;
                         RLogger::error("[%s] Failed to write index file \"%s\". %s\n",
                                        this->settings.getName().toUtf8().constData(),
                                        this->indexFileName.toUtf8().constData(),
@@ -133,16 +142,13 @@ int FileManager::perform()
                     }
                 }
 
+                dataLocker.unlock();
+
                 emit this->requestCompleted(task.getId(),task.getObjectShared());
             }
 
-            safeStopFlag = this->stopFlag;
-
-            this->syncMutex.unlock();
-
-            QThread::msleep(10);
+            this->syncMutex.lock();
         }
-        this->syncMutex.lock();
         this->stopFlag = false;
         this->syncMutex.unlock();
         this->serviceMutex.unlock();
@@ -166,6 +172,7 @@ void FileManager::stop()
                   this->settings.getName().toUtf8().constData());
     this->syncMutex.lock();
     this->stopFlag = true;
+    this->taskCondition.wakeAll();
     this->syncMutex.unlock();
 
     while (!this->serviceMutex.tryLock())
@@ -241,6 +248,7 @@ QUuid FileManager::requestRemoveFile(const RUserInfo &executor, FileObject *obje
 QJsonObject FileManager::getStatisticsJson() const
 {
     RLogger::debug("[%s] Producting statistics\n",this->settings.getName().toUtf8().constData());
+    QMutexLocker dataLocker(&this->dataMutex);
     QJsonObject jObject = this->statistics.toJson();
     jObject["index"] = this->fileIndex.getStatisticsJson();
     return jObject;
@@ -304,6 +312,7 @@ QUuid FileManager::enqueueTask(const FileManagerTask &task)
                    task.getObject()->getInfo().getId().toString(QUuid::WithoutBraces).toUtf8().constData());
     this->syncMutex.lock();
     this->tasks.enqueue(task);
+    this->taskCondition.wakeAll();
     this->syncMutex.unlock();
     R_LOG_TRACE_RETURN(task.getId());
 }
@@ -312,6 +321,12 @@ QString FileManager::findFilePath(const RFileInfo &fileInfo) const
 {
     QDir storeDir(this->storePath);
     return storeDir.absoluteFilePath(fileInfo.getId().toString(QUuid::WithoutBraces));
+}
+
+QByteArray FileManager::findContentMd5Checksum(const QByteArray &content)
+{
+    // Must produce the same format as RFileInfo::findMd5Checksum().
+    return QCryptographicHash::hash(content,QCryptographicHash::Md5).toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals);
 }
 
 RError::Type FileManager::listFiles(const RUserInfo &executor, QByteArray &output) const
@@ -449,8 +464,8 @@ RError::Type FileManager::storeFile(const RUserInfo &executor, const FileObject 
         R_LOG_TRACE_RETURN(RError::WriteFile);
     }
 
-    fileInfo.setSize(QFileInfo(this->findFilePath(fileInfo)).size());
-    fileInfo.setMd5Checksum(RFileInfo::findMd5Checksum(this->findFilePath(fileInfo)));
+    fileInfo.setSize(object.getContent().size());
+    fileInfo.setMd5Checksum(FileManager::findContentMd5Checksum(object.getContent()));
 
     this->fileIndex.registerObject(fileInfo);
 
@@ -493,20 +508,19 @@ RError::Type FileManager::replaceFile(const RUserInfo &executor, const FileObjec
         R_LOG_TRACE_RETURN(errorType);
     }
 
-    if (!files.isEmpty())
+    // Remove all replaced files. Do not abort on the first failure so the
+    // response always describes the complete outcome.
+    for (const RFileInfo &fileInfo : std::as_const(files))
     {
-        // Remove all replaced files.
-        for (const RFileInfo &fileInfo : std::as_const(files))
+        QByteArray removeFileOutput;
+        RError::Type removeErrorType = this->removeFile(executor,fileInfo.getId(),removeFileOutput);
+        QJsonObject jsonRemoveFile = QJsonDocument::fromJson(removeFileOutput).object();
+        if (removeErrorType != RError::None)
         {
-            QByteArray removeFileOutput;
-            errorType = this->removeFile(executor,fileInfo.getId(),removeFileOutput);
-            jsonRemoveFileArray.append(QJsonDocument::fromJson(removeFileOutput).object());
-            if (errorType != RError::None)
-            {
-                output = uploadFileOutput;
-                R_LOG_TRACE_RETURN(errorType);
-            }
+            jsonRemoveFile["error"] = QString(removeFileOutput);
+            errorType = removeErrorType;
         }
+        jsonRemoveFileArray.append(jsonRemoveFile);
     }
 
     jsonOutput["upload"] = QJsonDocument::fromJson(uploadFileOutput).object();
@@ -580,8 +594,8 @@ RError::Type FileManager::updateFile(const RUserInfo &executor, const FileObject
     }
 
     qint64 oldSize = fileInfo.getSize();
-    fileInfo.setSize(QFileInfo(this->findFilePath(fileInfo)).size());
-    fileInfo.setMd5Checksum(RFileInfo::findMd5Checksum(this->findFilePath(fileInfo)));
+    fileInfo.setSize(object.getContent().size());
+    fileInfo.setMd5Checksum(FileManager::findContentMd5Checksum(object.getContent()));
 
     this->fileIndex.registerObject(fileInfo);
 
@@ -611,6 +625,15 @@ RError::Type FileManager::updateFileAccessOwner(const RUserInfo &executor, const
     }
 
     RFileInfo fileInfo(this->fileIndex.getObjectInfo(object.getInfo().getId()));
+
+    if (!UserManager::authorizeUserAccess(executor,fileInfo.getAccessRights(),RAccessMode::None))
+    {
+        output = QString("User \"%1\" is not authorized to change access owner of file id=\"%2\"").arg(executor.getName(),object.getInfo().getId().toString(QUuid::WithoutBraces)).toUtf8();
+        RLogger::error("[%s] %s.\n",
+                       this->settings.getName().toUtf8().constData(),
+                       output.constData());
+        R_LOG_TRACE_RETURN(RError::Unauthorized);
+    }
 
     if (!object.getInfo().getAccessRights().getOwner().isValid())
     {
@@ -863,10 +886,10 @@ RError::Type FileManager::removeFile(const RUserInfo &executor, const QUuid &id,
                        output.constData());
         R_LOG_TRACE_RETURN(RError::Unauthorized);
     }
-    fileInfo = this->fileIndex.unregisterObject(id);
-
-    QDir storeDir(this->storePath);
-    if (!storeDir.remove(fileInfo.getId().toString(QUuid::WithoutBraces)))
+    // Remove the file from disk first; only unregister it from the index once
+    // the disk state is known so the index never references a lost file.
+    QString filePath = this->findFilePath(fileInfo);
+    if (QFile::exists(filePath) && !QFile::remove(filePath))
     {
         output = QString("Failed to remove file id=\"%1\"").arg(fileInfo.getId().toString(QUuid::WithoutBraces)).toUtf8();
         RLogger::error("[%s] %s.\n",
@@ -874,6 +897,7 @@ RError::Type FileManager::removeFile(const RUserInfo &executor, const QUuid &id,
                        output.constData());
         R_LOG_TRACE_RETURN(RError::WriteFile);
     }
+    fileInfo = this->fileIndex.unregisterObject(id);
 
     this->totalSize -= fileInfo.getSize();
     this->statistics.recordValue(FileManagerStatistics::Type::FileSizeRemove,double(fileInfo.getSize()));

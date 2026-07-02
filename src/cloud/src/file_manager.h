@@ -8,6 +8,7 @@
 #include <QSharedPointer>
 #include <QUuid>
 #include <QMutex>
+#include <QWaitCondition>
 
 #include <rbl_job.h>
 
@@ -43,8 +44,13 @@ class FileManager : public RJob
 
         QQueue<FileManagerTask> tasks;
 
+        //! Protects the task queue and the stop flag.
         QMutex syncMutex;
         QMutex serviceMutex;
+        //! Signaled when a task is enqueued or stop is requested.
+        QWaitCondition taskCondition;
+        //! Protects fileIndex, statistics and totalSize (worker thread vs. statistics readers).
+        mutable QMutex dataMutex;
 
         //! Total file size in store.
         qint64 totalSize;
@@ -112,6 +118,9 @@ class FileManager : public RJob
 
         //! Build absolute path to file in store.
         QString findFilePath(const RFileInfo &fileInfo) const;
+
+        //! Compute MD5 checksum of in-memory content (same format as RFileInfo::findMd5Checksum).
+        static QByteArray findContentMd5Checksum(const QByteArray &content);
 
         //! List files.
         RError::Type listFiles(const RUserInfo &executor, QByteArray &output) const;
