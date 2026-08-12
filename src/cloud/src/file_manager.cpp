@@ -455,7 +455,8 @@ RError::Type FileManager::storeFile(const RUserInfo &executor, const FileObject 
 
     RFileInfo fileInfo(object.getInfo());
 
-    if (!RFileTools::writeBinaryFile(this->findFilePath(fileInfo),object.getContent()))
+    // Atomic write: a crash mid-write must never leave a truncated file in the store.
+    if (!RFileTools::writeBinaryFileAtomic(this->findFilePath(fileInfo),object.getContent()))
     {
         output = QString("Failed to write file id=\"%1\"").arg(fileInfo.getId().toString(QUuid::WithoutBraces)).toUtf8();
         RLogger::error("[%s] %s.\n",
@@ -584,7 +585,8 @@ RError::Type FileManager::updateFile(const RUserInfo &executor, const FileObject
     fileInfo.setPath(object.getInfo().getPath());
     fileInfo.setUpdateDateTime(QDateTime::currentSecsSinceEpoch());
 
-    if (!RFileTools::writeBinaryFile(this->findFilePath(fileInfo),object.getContent()))
+    // Atomic write: readers must only ever see the old or the new complete content.
+    if (!RFileTools::writeBinaryFileAtomic(this->findFilePath(fileInfo),object.getContent()))
     {
         output = QString("Failed to write file id=\"%1\"").arg(fileInfo.getId().toString(QUuid::WithoutBraces)).toUtf8();
         RLogger::error("[%s] %s.\n",

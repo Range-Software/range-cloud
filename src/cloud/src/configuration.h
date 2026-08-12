@@ -23,6 +23,8 @@ class Configuration
         static const QString configurationFileBase;
         static const QString actionsFileBase;
         static const QString processesFileBase;
+        static const QString aiQueriesFileBase;
+        static const QString aiFileStoreIndexFileBase;
         static const QString usersFileBase;
         static const QString logFileBase;
 
@@ -55,6 +57,14 @@ class Configuration
         qint64 maxCommentLength;
 
         QString senderEmailAddress;
+
+        QString aiType;
+        QString aiApiUrl;
+        QString aiApiKey;
+        QString aiModel;
+        qint64 aiMaxTokens;
+        qint64 aiMaxFileContextSize;
+        qint64 aiRemoteFileStoreSize;
 
     public:
 
@@ -115,6 +125,30 @@ class Configuration
         const QString &getSenderEmailAddress() const;
         void setSenderEmailAddress(const QString &senderEmailAddress);
 
+        const QString &getAiType() const;
+        void setAiType(const QString &aiType);
+
+        const QString &getAiApiUrl() const;
+        void setAiApiUrl(const QString &aiApiUrl);
+
+        const QString &getAiApiKey() const;
+        void setAiApiKey(const QString &aiApiKey);
+
+        const QString &getAiModel() const;
+        void setAiModel(const QString &aiModel);
+
+        qint64 getAiMaxTokens() const;
+        void setAiMaxTokens(qint64 aiMaxTokens);
+
+        qint64 getAiMaxFileContextSize() const;
+        void setAiMaxFileContextSize(qint64 aiMaxFileContextSize);
+
+        qint64 getAiRemoteFileStoreSize() const;
+        void setAiRemoteFileStoreSize(qint64 aiRemoteFileStoreSize);
+
+        //! Get AI remote file store index file path.
+        QString getAiFileStoreIndexFilePath() const;
+
         //! Get log directory path.
         QString getLogDirectoryPath() const;
 
@@ -147,6 +181,9 @@ class Configuration
 
         //! Get processes file path.
         QString getProcessesFilePath() const;
+
+        //! Get AI queries file path.
+        QString getAiQueriesFilePath() const;
 
         //! Get log file path.
         QString getLogFilePath() const;
@@ -210,6 +247,9 @@ class Configuration
         //! Build processes file path.
         static QString buildProcessesFilePath(const QString &cloudDirectoryPath);
 
+        //! Build AI queries file path.
+        static QString buildAiQueriesFilePath(const QString &cloudDirectoryPath);
+
         //! Build log file path.
         static QString buildLogFilePath(const QString &cloudDirectoryPath);
 
@@ -259,6 +299,27 @@ class Configuration
 
         //! Get default sender email address.
         static QString getDefaultSenderEmailAddress();
+
+        //! Get default AI agent type.
+        static QString getDefaultAiType();
+
+        //! Get default AI API endpoint URL.
+        static QString getDefaultAiApiUrl();
+
+        //! Get default AI API key.
+        static QString getDefaultAiApiKey();
+
+        //! Get default AI model name.
+        static QString getDefaultAiModel();
+
+        //! Get default AI maximum number of tokens to generate.
+        static qint64 getDefaultAiMaxTokens();
+
+        //! Get default AI maximum size of a file embedded into query context.
+        static qint64 getDefaultAiMaxFileContextSize();
+
+        //! Get default AI remote (Anthropic) file store capacity in bytes.
+        static qint64 getDefaultAiRemoteFileStoreSize();
 
 };
 

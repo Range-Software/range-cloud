@@ -1,31 +1,33 @@
-## Version 1.0.6
+## Version 1.1.0
 
 ### Improvements
 
-- Replaced polling loops in FileManager and Mailer with event-driven task queues (wait conditions)
-- Mailer now produces properly formatted email messages (From/To/Subject headers)
-- File checksum is computed from in-memory content instead of re-reading the stored file
-- Action and process access rights changes are persisted immediately
+- New AI query service: the `ai-query` action (cloud-tool: `--ai-query`) forwards a structured question — `question` plus optional `fileId`, `fileDescription`, `context` and `language` — to an external AI service
+- AI queries are processed asynchronously: submission returns a query id immediately and the answer is fetched with the new `ai-query-result` action (cloud-tool polls transparently); each result is delivered once, only to the submitting user or root, and unfetched results are discarded after one hour
+- A query can reference a stored file, read under the caller's access rights: for Claude (Anthropic) it is attached via the Anthropic Files API (PDF, PNG, JPEG, GIF, WebP and UTF-8 text) with content-hash re-use, replace-on-change and least-recently-used eviction against the remote store capacity; otherwise its text is inlined, and oversized or non-text files are rejected
+- Per-application AI contexts and guardrails are configurable in `etc/aiqueries.json` (created with defaults on first start)
+- New configuration settings: `aiType`, `aiApiUrl`, `aiApiKey`, `aiModel`, `aiMaxTokens`, `aiMaxFileContextSize` and `aiRemoteFileStoreSize` (Anthropic file store capacity, default 100 GB)
+- File store writes are atomic: an interrupted write can no longer corrupt a stored file
+- Emails are now properly formatted (From/To/Subject headers)
+- Access rights changes are saved immediately
+- Server log file renamed from `Cloud.log` to `cloud.log` to match the binary name
 
 ### Bug Fixes
 
-- Fix double-free of FileManager and Mailer on application shutdown
-- Fix possible request starvation/deadlock of the global thread pool on machines with few cores
-- Unknown actions now receive an error response instead of leaving the HTTP request unanswered
-- Authentication token removal now verifies that the token belongs to the authorized resource name
+- Fixed crash on application shutdown
+- `cloud_tool.sh` no longer word-splits quoted arguments (e.g. `--json-content` with spaces) when forwarding them to `cloud-tool`
+- Fixed possible deadlock on machines with few CPU cores
+- Unknown actions now receive an error response instead of leaving the request unanswered
+- Authentication token removal now verifies that the token belongs to the requesting user
 - Renaming a user to an already existing user name is rejected
-- Group removal now persists the fully updated state (group stripped from users before write)
 - File replace no longer aborts on first removal failure and reports the complete outcome
-- Protect file index and statistics with a dedicated mutex (statistics reads vs. worker thread)
-- Fixed wrong placeholders in unauthorized-token error messages
-- Fixed groups being counted as users in user manager statistics
 
 ### Submodules
 
-- range-ai-lib @ v1.0.0
-- range-base-lib @ v1.0.1
+- range-ai-lib @ v1.1.0
+- range-base-lib @ v1.1.0
 - range-build-tools @ v1.0.0
-- range-cloud-lib @ v1.0.3
+- range-cloud-lib @ v1.1.0
 
 ---
 

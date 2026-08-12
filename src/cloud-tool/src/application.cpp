@@ -8,6 +8,7 @@
 #include <rbl_logger.h>
 
 #include <rcl_cloud_action.h>
+#include <rcl_cloud_ai_query_request.h>
 #include <rcl_report_record.h>
 #include <rcl_cloud_session_manager.h>
 #include <rcl_cloud_tool_action.h>
@@ -183,8 +184,11 @@ void Application::onStarted()
         MainTask *mainTask = new MainTask(this);
         QTimer::singleShot(0, mainTask, SLOT(run()));
 
-        QString authUser = argumentsParser.getValue(RCloudAction::Auth::User::key).toString();
-        QString authToken = argumentsParser.getValue(RCloudAction::Auth::Token::key).toString();
+        this->authUser = argumentsParser.getValue(RCloudAction::Auth::User::key).toString();
+        this->authToken = argumentsParser.getValue(RCloudAction::Auth::Token::key).toString();
+
+        const QString &authUser = this->authUser;
+        const QString &authToken = this->authToken;
 
         if (argumentsParser.isSet(RCloudAction::Action::Test::key))
         {
@@ -401,6 +405,12 @@ void Application::onStarted()
             RReportRecord reportRecord(RReportRecord::fromJson(QJsonDocument::fromJson(argumentsParser.getValue("json-content").toString().toUtf8()).object()));
             this->toolInput.addAction(RCloudToolAction::requestSubmitReport(this->httpClient, reportRecord, authUser, authToken));
         }
+
+        if (argumentsParser.isSet(RCloudAction::Action::AIQuery::key))
+        {
+            RCloudAIQueryRequest aiQueryRequest(RCloudAIQueryRequest::fromJson(QJsonDocument::fromJson(argumentsParser.getValue("json-content").toString().toUtf8()).object()));
+            this->toolInput.addAction(RCloudToolAction::requestAIQuery(this->httpClient, aiQueryRequest, authUser, authToken));
+        }
     }
     catch (const RError &error)
     {
@@ -414,6 +424,21 @@ void Application::onStarted()
 const RToolInput &Application::getToolInput() const
 {
     return this->toolInput;
+}
+
+RHttpClient *Application::getHttpClient()
+{
+    return this->httpClient;
+}
+
+const QString &Application::getAuthUser() const
+{
+    return this->authUser;
+}
+
+const QString &Application::getAuthToken() const
+{
+    return this->authToken;
 }
 
 const QString &Application::getOutputFileName() const

@@ -7,6 +7,7 @@
 
 #include "action_handler.h"
 #include "action_manager.h"
+#include "ai_query_manager.h"
 #include "configuration.h"
 #include "mailer.h"
 #include "process_manager.h"
@@ -51,6 +52,9 @@ class Application : public QCoreApplication
 
         //! Process manager service.
         ProcessManager *processManager;
+
+        //! AI query manager service.
+        AIQueryManager *aiQueryManager;
 
         //! Report manager service.
         ReportManager *reportManager;

@@ -14,4 +14,4 @@ else
     export LD_LIBRARY_PATH="$libDir:$LD_LIBRARY_PATH"
 fi
 
-$binDir/cloud-tool $@
+$binDir/cloud-tool "$@"

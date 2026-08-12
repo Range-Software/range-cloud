@@ -44,6 +44,9 @@
   * [Remove existing group](#remove-existing-group)
 * [Reporting](#reporting)
   * [Submit report](#submit-report)
+* [Artificial intelligence](#artificial-intelligence)
+  * [Submit AI query](#submit-ai-query)
+  * [Fetch AI query result](#fetch-ai-query-result)
 
 ---
 
@@ -1085,4 +1088,110 @@ GET https://<host>:<port>/submit-report/
 **Response:**
 ```
 <report-status>
+```
+
+---
+
+## Artificial intelligence
+
+### Submit AI query
+
+Forwards the query, via `range-ai-lib`, to the AI service configured on the cloud server
+(`aiType`, `aiApiUrl`, `aiApiKey`, `aiModel`, `aiMaxTokens` in the server configuration).
+The query is processed asynchronously: the request is acknowledged immediately with a
+query `id` and `status` `pending`, and the generated answer is retrieved afterwards with
+[Fetch AI query result](#fetch-ai-query-result).
+
+```
+POST https://<host>:<port>/ai-query/
+```
+**Body:**
+The `application` field selects a server-side context and guardrails for the query.
+Recognized values are defined in the server's `etc/aiqueries.json` file (each entry has a
+`name`, optional `aliases`, and a `systemPrompt`; the file is created with default entries
+`family-tree` and `finite-element-analysis` on first start). Any other value (or an empty
+field) uses the `defaultSystemPrompt` from the same file. The `model` field is optional;
+when empty the server default model is used.
+
+The `query` object carries the question itself plus optional supporting fields:
+`fileId` (UUID of a resource file stored in Range Cloud), `fileDescription`
+(free-form client-supplied description of the referenced file, e.g. what it is and
+why it is attached), `context` (free-form text supplied by the client to ground the
+answer) and `language` (preferred response language). Only `question` is mandatory.
+
+When `fileId` is set, the server reads the file through the file service under the
+authenticated executor's access rights (read permission is required; an unauthorized
+or unknown id yields an error response) and embeds an in-memory snapshot of its
+content into the query context. The snapshot is taken at submission time — later
+changes to the stored file do not affect a running query. The file is embedded into
+the agent prompt inside a fenced block together with its metadata (name, the
+optional `fileDescription`, version, tags, size, update time) and a configurable
+preamble (`filePromptPreamble` in `etc/aiqueries.json`) instructing the model to
+treat the content as data. Files larger than the server's `aiMaxFileContextSize`
+configuration value (default 262144 bytes) and files that are not valid UTF-8 text
+are rejected. An empty or absent `fileId` is valid and means no file is accessed.
+```
+{
+    "application": "family-tree",
+    "model": "claude-sonnet-4-6",
+    "query": {
+        "question": "Summarize the contents of my latest report.",
+        "fileId": "123e4567-e89b-12d3-a456-426614174000",
+        "fileDescription": "My latest report.",
+        "context": "",
+        "language": "en"
+    }
+}
+```
+**Response:**
+```
+{
+    "id": "d7a749a0-0d3b-4e4c-8d29-c1abb036150f",
+    "status": "pending",
+    "request": {
+        "application": "family-tree",
+        "model": "claude-sonnet-4-6",
+        "query": {
+            "question": "Summarize the contents of my latest report.",
+            "fileId": "123e4567-e89b-12d3-a456-426614174000",
+            "fileDescription": "My latest report.",
+            "context": "",
+            "language": "en"
+        }
+    },
+    "response": ""
+}
+```
+
+### Fetch AI query result
+
+Fetches the result of a previously submitted AI query by the `id` returned from
+[Submit AI query](#submit-ai-query). While the query is still being processed the
+response carries `status` `pending` and an empty `response`; clients should poll
+until `status` becomes `completed`. A completed result is returned exactly once and
+is then discarded on the server; unfetched results are discarded after one hour.
+Only the user who submitted the query (or `root`) may fetch its result. An unknown,
+already fetched, or expired id yields an error response.
+
+```
+GET https://<host>:<port>/ai-query-result/?resource-id=<query-id>
+```
+**Response:**
+```
+{
+    "id": "d7a749a0-0d3b-4e4c-8d29-c1abb036150f",
+    "status": "completed",
+    "request": {
+        "application": "family-tree",
+        "model": "claude-sonnet-4-6",
+        "query": {
+            "question": "Summarize the contents of my latest report.",
+            "fileId": "123e4567-e89b-12d3-a456-426614174000",
+            "fileDescription": "My latest report.",
+            "context": "",
+            "language": "en"
+        }
+    },
+    "response": "<AI generated answer>"
+}
 ```

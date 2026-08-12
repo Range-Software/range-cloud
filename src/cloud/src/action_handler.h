@@ -9,6 +9,7 @@
 #include <rcl_cloud_action.h>
 
 #include "action_manager.h"
+#include "ai_query_manager.h"
 #include "file_manager.h"
 #include "mailer.h"
 #include "process_manager.h"
@@ -28,6 +29,8 @@ class ActionHandler : public QObject
         ActionManager *actionManager;
         //! Pointer to process manager.
         ProcessManager *processManager;
+        //! Pointer to AI query manager.
+        AIQueryManager *aiQueryManager;
         //! Pointer to file manager.
         FileManager *fileManager;
         //! Pointer to report manager.
@@ -48,6 +51,7 @@ class ActionHandler : public QObject
         explicit ActionHandler(UserManager *userManager,
                                ActionManager *actionManager,
                                ProcessManager *processManager,
+                               AIQueryManager *aiQueryManager,
                                FileManager *fileManager,
                                ReportManager *reportManager,
                                Mailer *mailer,

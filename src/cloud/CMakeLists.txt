@@ -2,6 +2,9 @@ qt_add_executable(cloud
     src/action_handler.cpp
     src/action_manager.cpp
     src/action_manager_settings.cpp
+    src/ai_query_info.cpp
+    src/ai_query_manager.cpp
+    src/ai_query_manager_settings.cpp
     src/application.cpp
     src/configuration.cpp
     src/file_index.cpp
@@ -27,6 +30,9 @@ qt_add_executable(cloud
     src/action_handler.h
     src/action_manager.h
     src/action_manager_settings.h
+    src/ai_query_info.h
+    src/ai_query_manager.h
+    src/ai_query_manager_settings.h
     src/application.h
     src/configuration.h
     src/file_index.h
@@ -49,10 +55,11 @@ qt_add_executable(cloud
     src/user_manager_settings.h
 )
 
-add_dependencies(cloud range-base-lib range-cloud-lib)
+add_dependencies(cloud range-base-lib range-cloud-lib range-ai-lib)
 
 target_link_libraries(cloud
     PRIVATE
         range-cloud-lib
+        range-ai-lib
         common_defines
 )

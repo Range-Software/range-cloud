@@ -356,6 +356,20 @@ void Application::onStarted()
         QObject::connect(this->fileManager, &FileManager::finished, this, &Application::fileServiceFinished);
         QObject::connect(this->fileManager, &FileManager::failed, this, &Application::fileServiceFailed);
 
+        // AI query manager service (accesses the file store only through the file manager)
+        AIQueryManagerSettings aiQueryManagerSettings;
+        aiQueryManagerSettings.setType(configuration.getAiType());
+        aiQueryManagerSettings.setApiUrl(configuration.getAiApiUrl());
+        aiQueryManagerSettings.setApiKey(configuration.getAiApiKey());
+        aiQueryManagerSettings.setModel(configuration.getAiModel());
+        aiQueryManagerSettings.setMaxTokens(configuration.getAiMaxTokens());
+        aiQueryManagerSettings.setMaxFileContextSize(configuration.getAiMaxFileContextSize());
+        aiQueryManagerSettings.setRemoteFileStoreSize(configuration.getAiRemoteFileStoreSize());
+        aiQueryManagerSettings.setAiQueriesFileName(configuration.getAiQueriesFilePath());
+        aiQueryManagerSettings.setFileStoreIndexFileName(configuration.getAiFileStoreIndexFilePath());
+
+        this->aiQueryManager = new AIQueryManager(aiQueryManagerSettings,this->fileManager,this);
+
         // Report manager service
         ReportManagerSettings reportManagerSettings;
         reportManagerSettings.setReportDirectory(configuration.getReportsDirectoryPath());
@@ -417,6 +431,7 @@ void Application::onStarted()
         this->actionHandler = new ActionHandler(this->userManager,
                                                 this->actionManager,
                                                 this->processManager,
+                                                this->aiQueryManager,
                                                 this->fileManager,
                                                 this->reportManager,
                                                 this->mailer,

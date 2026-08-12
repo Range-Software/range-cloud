@@ -3,6 +3,8 @@
 
 #include <rbl_logger.h>
 #include <rbl_utils.h>
+#include <rcl_cloud_ai_query_request.h>
+#include <rcl_cloud_ai_query_response.h>
 #include <rcl_cloud_process_response.h>
 
 #include "action_handler.h"
@@ -10,6 +12,7 @@
 ActionHandler::ActionHandler(UserManager *userManager,
                              ActionManager *actionManager,
                              ProcessManager *processManager,
+                             AIQueryManager *aiQueryManager,
                              FileManager *fileManager,
                              ReportManager *reportManager,
                              Mailer *mailer,
@@ -18,6 +21,7 @@ ActionHandler::ActionHandler(UserManager *userManager,
     , userManager{userManager}
     , actionManager{actionManager}
     , processManager{processManager}
+    , aiQueryManager{aiQueryManager}
     , fileManager{fileManager}
     , reportManager{reportManager}
     , mailer{mailer}
@@ -244,6 +248,7 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
         jServicesArray.append(this->reportManager->getStatisticsJson());
         jServicesArray.append(this->userManager->getStatisticsJson());
         jServicesArray.append(this->mailer->getStatisticsJson());
+        jServicesArray.append(this->aiQueryManager->getStatisticsJson());
         RLogger::unindent();
 
         QJsonObject jObject;
@@ -284,6 +289,85 @@ void ActionHandler::resolveAction(const RCloudAction &action, const QString &fro
 
             RCloudAction resolvedAction(action);
             resolvedAction.setData(QJsonDocument(response.toJson()).toJson());
+            resolvedAction.setErrorType(error.getType());
+            emit this->resolved(resolvedAction);
+            R_LOG_TRACE_OUT;
+            return;
+        }
+        catch (...)
+        {
+            RCloudAction resolvedAction(action);
+            resolvedAction.setData(RError::getTypeMessage(RError::Unknown).toUtf8());
+            resolvedAction.setErrorType(RError::Unknown);
+            emit this->resolved(resolvedAction);
+            R_LOG_TRACE_OUT;
+            return;
+        }
+    }
+    else if (action.getAction() == RCloudAction::Action::AIQuery::key)
+    {
+        RCloudAIQueryRequest request(RCloudAIQueryRequest::fromJson(QJsonDocument::fromJson(action.getData()).object()));
+        request.setExecutor(executorInfo);
+
+        try
+        {
+            if (request.getQuery().isEmpty())
+            {
+                throw RError(RError::InvalidInput,R_ERROR_REF,QString("Invalid AI query. Question must not be empty."));
+            }
+
+            QUuid requestId = this->aiQueryManager->submitQuery(request);
+
+            // The query runs asynchronously; acknowledge the submission right
+            // away with the id the client uses to fetch the result.
+            RCloudAIQueryResponse response;
+            response.setId(requestId);
+            response.setStatus(RCloudAIQueryResponse::Pending);
+            response.setAIQueryRequest(request);
+
+            RCloudAction resolvedAction(action);
+            resolvedAction.setData(QJsonDocument(response.toJson()).toJson());
+            resolvedAction.setErrorType(RError::None);
+            emit this->resolved(resolvedAction);
+        }
+        catch (const RError &error)
+        {
+            RCloudAIQueryResponse response;
+            response.setAIQueryRequest(request);
+            response.setResponseMessage(error.getMessage());
+
+            RCloudAction resolvedAction(action);
+            resolvedAction.setData(QJsonDocument(response.toJson()).toJson());
+            resolvedAction.setErrorType(error.getType());
+            emit this->resolved(resolvedAction);
+            R_LOG_TRACE_OUT;
+            return;
+        }
+        catch (...)
+        {
+            RCloudAction resolvedAction(action);
+            resolvedAction.setData(RError::getTypeMessage(RError::Unknown).toUtf8());
+            resolvedAction.setErrorType(RError::Unknown);
+            emit this->resolved(resolvedAction);
+            R_LOG_TRACE_OUT;
+            return;
+        }
+    }
+    else if (action.getAction() == RCloudAction::Action::AIQueryResult::key)
+    {
+        try
+        {
+            RCloudAIQueryResponse response = this->aiQueryManager->fetchQueryResult(action.getResourceId(),executorInfo);
+
+            RCloudAction resolvedAction(action);
+            resolvedAction.setData(QJsonDocument(response.toJson()).toJson());
+            resolvedAction.setErrorType(RError::None);
+            emit this->resolved(resolvedAction);
+        }
+        catch (const RError &error)
+        {
+            RCloudAction resolvedAction(action);
+            resolvedAction.setData(error.getMessage().toUtf8());
             resolvedAction.setErrorType(error.getType());
             emit this->resolved(resolvedAction);
             R_LOG_TRACE_OUT;
@@ -917,3 +1001,4 @@ void ActionHandler::onProcessRequestCompleted(const QUuid &requestId, const RClo
     }
     R_LOG_TRACE_OUT;
 }
+

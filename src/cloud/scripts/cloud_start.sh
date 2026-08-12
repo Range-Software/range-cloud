@@ -73,7 +73,7 @@ fi
 
 count_statements()
 {
-    local _logFile="$cloudDir/log/Cloud.log"
+    local _logFile="$cloudDir/log/cloud.log"
 
     _nStatements=$[0]
     if [ -f "$_logFile" ]

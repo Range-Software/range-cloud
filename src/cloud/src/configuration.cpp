@@ -28,8 +28,10 @@ const QString Configuration::reportsDirectoryBase = "reports";
 const QString Configuration::configurationFileBase = "configuration.json";
 const QString Configuration::actionsFileBase = "actions.json";
 const QString Configuration::processesFileBase = "processes.json";
+const QString Configuration::aiQueriesFileBase = "aiqueries.json";
+const QString Configuration::aiFileStoreIndexFileBase = "ai-file-store.json";
 const QString Configuration::usersFileBase = "users.json";
-const QString Configuration::logFileBase = QString("%1.log").arg(RVendor::shortName());
+const QString Configuration::logFileBase = QString("%1.log").arg(RVendor::shortName().toLower());
 
 void Configuration::_init(const Configuration *pConfiguration)
 {
@@ -51,6 +53,13 @@ void Configuration::_init(const Configuration *pConfiguration)
         this->maxReportLength = pConfiguration->maxReportLength;
         this->maxCommentLength = pConfiguration->maxCommentLength;
         this->senderEmailAddress = pConfiguration->senderEmailAddress;
+        this->aiType = pConfiguration->aiType;
+        this->aiApiUrl = pConfiguration->aiApiUrl;
+        this->aiApiKey = pConfiguration->aiApiKey;
+        this->aiModel = pConfiguration->aiModel;
+        this->aiMaxTokens = pConfiguration->aiMaxTokens;
+        this->aiMaxFileContextSize = pConfiguration->aiMaxFileContextSize;
+        this->aiRemoteFileStoreSize = pConfiguration->aiRemoteFileStoreSize;
     }
 }
 
@@ -71,6 +80,13 @@ Configuration::Configuration(const QString &cloudDirectory)
     , maxReportLength{Configuration::getDefaultMaxReportLength()}
     , maxCommentLength{Configuration::getDefaultMaxCommentLength()}
     , senderEmailAddress{Configuration::getDefaultSenderEmailAddress()}
+    , aiType{Configuration::getDefaultAiType()}
+    , aiApiUrl{Configuration::getDefaultAiApiUrl()}
+    , aiApiKey{Configuration::getDefaultAiApiKey()}
+    , aiModel{Configuration::getDefaultAiModel()}
+    , aiMaxTokens{Configuration::getDefaultAiMaxTokens()}
+    , aiMaxFileContextSize{Configuration::getDefaultAiMaxFileContextSize()}
+    , aiRemoteFileStoreSize{Configuration::getDefaultAiRemoteFileStoreSize()}
 {
     this->_init();
     QString configurationFile = Configuration::buildConfigurationFilePath(this->cloudDirectory);
@@ -245,6 +261,81 @@ void Configuration::setSenderEmailAddress(const QString &senderEmailAddress)
     this->senderEmailAddress = senderEmailAddress;
 }
 
+const QString &Configuration::getAiApiUrl() const
+{
+    return this->aiApiUrl;
+}
+
+void Configuration::setAiApiUrl(const QString &aiApiUrl)
+{
+    this->aiApiUrl = aiApiUrl;
+}
+
+const QString &Configuration::getAiApiKey() const
+{
+    return this->aiApiKey;
+}
+
+void Configuration::setAiApiKey(const QString &aiApiKey)
+{
+    this->aiApiKey = aiApiKey;
+}
+
+const QString &Configuration::getAiType() const
+{
+    return this->aiType;
+}
+
+void Configuration::setAiType(const QString &aiType)
+{
+    this->aiType = aiType;
+}
+
+const QString &Configuration::getAiModel() const
+{
+    return this->aiModel;
+}
+
+void Configuration::setAiModel(const QString &aiModel)
+{
+    this->aiModel = aiModel;
+}
+
+qint64 Configuration::getAiMaxTokens() const
+{
+    return this->aiMaxTokens;
+}
+
+void Configuration::setAiMaxTokens(qint64 aiMaxTokens)
+{
+    this->aiMaxTokens = aiMaxTokens;
+}
+
+qint64 Configuration::getAiMaxFileContextSize() const
+{
+    return this->aiMaxFileContextSize;
+}
+
+void Configuration::setAiMaxFileContextSize(qint64 aiMaxFileContextSize)
+{
+    this->aiMaxFileContextSize = aiMaxFileContextSize;
+}
+
+qint64 Configuration::getAiRemoteFileStoreSize() const
+{
+    return this->aiRemoteFileStoreSize;
+}
+
+void Configuration::setAiRemoteFileStoreSize(qint64 aiRemoteFileStoreSize)
+{
+    this->aiRemoteFileStoreSize = aiRemoteFileStoreSize;
+}
+
+QString Configuration::getAiFileStoreIndexFilePath() const
+{
+    return Configuration::buildPath(Configuration::buildVariableDirectoryPath(this->cloudDirectory),Configuration::aiFileStoreIndexFileBase);
+}
+
 QString Configuration::getLogDirectoryPath() const
 {
     return Configuration::buildLogDirectoryPath(this->cloudDirectory);
@@ -298,6 +389,11 @@ QString Configuration::getActionsFilePath() const
 QString Configuration::getProcessesFilePath() const
 {
     return Configuration::buildProcessesFilePath(this->cloudDirectory);
+}
+
+QString Configuration::getAiQueriesFilePath() const
+{
+    return Configuration::buildAiQueriesFilePath(this->cloudDirectory);
 }
 
 QString Configuration::getLogFilePath() const
@@ -381,6 +477,34 @@ void Configuration::fromJson(const QJsonObject &json)
     {
         this->senderEmailAddress = v.toString();
     }
+    if (const QJsonValue &v = json["aiType"]; v.isString())
+    {
+        this->aiType = v.toString();
+    }
+    if (const QJsonValue &v = json["aiApiUrl"]; v.isString())
+    {
+        this->aiApiUrl = v.toString();
+    }
+    if (const QJsonValue &v = json["aiApiKey"]; v.isString())
+    {
+        this->aiApiKey = v.toString();
+    }
+    if (const QJsonValue &v = json["aiModel"]; v.isString())
+    {
+        this->aiModel = v.toString();
+    }
+    if (const QJsonValue &v = json["aiMaxTokens"]; v.isString())
+    {
+        this->aiMaxTokens = v.toString().toLongLong();
+    }
+    if (const QJsonValue &v = json["aiMaxFileContextSize"]; v.isString())
+    {
+        this->aiMaxFileContextSize = v.toString().toLongLong();
+    }
+    if (const QJsonValue &v = json["aiRemoteFileStoreSize"]; v.isString())
+    {
+        this->aiRemoteFileStoreSize = v.toString().toLongLong();
+    }
 }
 
 QJsonObject Configuration::toJson() const
@@ -403,6 +527,13 @@ QJsonObject Configuration::toJson() const
     json["maxReportLength"] = QString::number(this->maxReportLength);
     json["maxCommentLength"] = QString::number(this->maxCommentLength);
     json["senderEmailAddress"] = this->senderEmailAddress;
+    json["aiType"] = this->aiType;
+    json["aiApiUrl"] = this->aiApiUrl;
+    json["aiApiKey"] = this->aiApiKey;
+    json["aiModel"] = this->aiModel;
+    json["aiMaxTokens"] = QString::number(this->aiMaxTokens);
+    json["aiMaxFileContextSize"] = QString::number(this->aiMaxFileContextSize);
+    json["aiRemoteFileStoreSize"] = QString::number(this->aiRemoteFileStoreSize);
 
     return json;
 }
@@ -520,6 +651,11 @@ QString Configuration::buildProcessesFilePath(const QString &cloudDirectoryPath)
     return Configuration::buildPath(Configuration::buildConfigurationDirectoryPath(cloudDirectoryPath),Configuration::processesFileBase);
 }
 
+QString Configuration::buildAiQueriesFilePath(const QString &cloudDirectoryPath)
+{
+    return Configuration::buildPath(Configuration::buildConfigurationDirectoryPath(cloudDirectoryPath),Configuration::aiQueriesFileBase);
+}
+
 QString Configuration::buildLogFilePath(const QString &cloudDirectoryPath)
 {
     return Configuration::buildPath(Configuration::buildLogDirectoryPath(cloudDirectoryPath),Configuration::logFileBase);
@@ -598,4 +734,41 @@ QString Configuration::getDefaultCaPublicKeyPath(const QString &cloudDirectoryPa
 QString Configuration::getDefaultSenderEmailAddress()
 {
     return QString();
+}
+
+QString Configuration::getDefaultAiApiUrl()
+{
+    // Empty by default so the agent uses the endpoint matching the configured AI type.
+    return QString();
+}
+
+QString Configuration::getDefaultAiApiKey()
+{
+    return QString();
+}
+
+QString Configuration::getDefaultAiType()
+{
+    return QString("Anthropic");
+}
+
+QString Configuration::getDefaultAiModel()
+{
+    return QString("claude-sonnet-5");
+}
+
+qint64 Configuration::getDefaultAiMaxTokens()
+{
+    return 1024;
+}
+
+qint64 Configuration::getDefaultAiMaxFileContextSize()
+{
+    return 256 * 1024;
+}
+
+qint64 Configuration::getDefaultAiRemoteFileStoreSize()
+{
+    // Matches the Anthropic Files API per-organization storage limit (100 GB).
+    return 100LL * 1024 * 1024 * 1024;
 }

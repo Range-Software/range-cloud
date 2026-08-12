@@ -26,6 +26,11 @@ class Application : public QCoreApplication
         //! Action output file name.
         QString outputFileName;
 
+        //! Authentication user.
+        QString authUser;
+        //! Authentication token.
+        QString authToken;
+
     public:
 
         //! Constructor.
@@ -36,6 +41,15 @@ class Application : public QCoreApplication
 
         //! Return const reference to tool input.
         const RToolInput &getToolInput() const;
+
+        //! Return pointer to HTTP client.
+        RHttpClient *getHttpClient();
+
+        //! Return const reference to authentication user.
+        const QString &getAuthUser() const;
+
+        //! Return const reference to authentication token.
+        const QString &getAuthToken() const;
 
         //! Return const reference to an action output file name.
         const QString &getOutputFileName() const;
