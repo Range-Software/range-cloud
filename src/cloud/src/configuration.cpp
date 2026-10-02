@@ -43,6 +43,8 @@ void Configuration::_init(const Configuration *pConfiguration)
         this->privateHttpPort = pConfiguration->privateHttpPort;
         this->rateLimitPerSecond = pConfiguration->rateLimitPerSecond;
         this->maxBodySize = pConfiguration->maxBodySize;
+        this->maxConnections = pConfiguration->maxConnections;
+        this->maxConnectionsPerHost = pConfiguration->maxConnectionsPerHost;
         this->publicKey = pConfiguration->publicKey;
         this->privateKey = pConfiguration->privateKey;
         this->privateKeyPassword = pConfiguration->privateKeyPassword;
@@ -69,7 +71,9 @@ Configuration::Configuration(const QString &cloudDirectory)
     , publicHttpPort{Configuration::getDefaultPublicHttpPort()}
     , privateHttpPort{Configuration::getDefaultPrivateHttpPort()}
     , rateLimitPerSecond{Configuration::getDefaultRateLimitPerSecond()}
-    , maxBodySize{Configuration::getMaxBodySize()}
+    , maxBodySize{Configuration::getDefaultMaxBodySize()}
+    , maxConnections{Configuration::getDefaultMaxConnections()}
+    , maxConnectionsPerHost{Configuration::getDefaultMaxConnectionsPerHost()}
     , publicKey{Configuration::getDefaultPublicKeyPath(this->cloudDirectory)}
     , privateKey{Configuration::getDefaultPrivateKeyPath(this->cloudDirectory)}
     , privateKeyPassword{QString()}
@@ -159,6 +163,26 @@ qint64 Configuration::getMaxBodySize() const
 void Configuration::setMaxBodySize(qint64 maxBodySize)
 {
     this->maxBodySize = maxBodySize;
+}
+
+quint32 Configuration::getMaxConnections() const
+{
+    return this->maxConnections;
+}
+
+void Configuration::setMaxConnections(quint32 maxConnections)
+{
+    this->maxConnections = maxConnections;
+}
+
+quint32 Configuration::getMaxConnectionsPerHost() const
+{
+    return this->maxConnectionsPerHost;
+}
+
+void Configuration::setMaxConnectionsPerHost(quint32 maxConnectionsPerHost)
+{
+    this->maxConnectionsPerHost = maxConnectionsPerHost;
 }
 
 const QString &Configuration::getPublicKey() const
@@ -437,6 +461,14 @@ void Configuration::fromJson(const QJsonObject &json)
     {
         this->maxBodySize = v.toString().toLongLong();
     }
+    if (const QJsonValue &v = json["maxConnections"]; v.isString())
+    {
+        this->maxConnections = v.toString().toUInt();
+    }
+    if (const QJsonValue &v = json["maxConnectionsPerHost"]; v.isString())
+    {
+        this->maxConnectionsPerHost = v.toString().toUInt();
+    }
     if (const QJsonValue &v = json["publicKey"]; v.isString())
     {
         this->publicKey = v.toString();
@@ -517,6 +549,8 @@ QJsonObject Configuration::toJson() const
     json["privateHttpPort"] = QString::number(this->privateHttpPort);
     json["rateLimitPerSecond"] = QString::number(this->rateLimitPerSecond);
     json["maxBodySize"] = QString::number(this->maxBodySize);
+    json["maxConnections"] = QString::number(this->maxConnections);
+    json["maxConnectionsPerHost"] = QString::number(this->maxConnectionsPerHost);
     json["publicKey"] = this->publicKey;
     json["privateKey"] = this->privateKey;
     json["privateKeyPassword"] = this->privateKeyPassword;
@@ -714,6 +748,16 @@ quint32 Configuration::getDefaultRateLimitPerSecond()
 qint64 Configuration::getDefaultMaxBodySize()
 {
     return RHttpServerSettings::defaultMaxBodySize;
+}
+
+quint32 Configuration::getDefaultMaxConnections()
+{
+    return RHttpServerSettings::defaultMaxConnections;
+}
+
+quint32 Configuration::getDefaultMaxConnectionsPerHost()
+{
+    return RHttpServerSettings::defaultMaxConnectionsPerHost;
 }
 
 QString Configuration::getDefaultPrivateKeyPath(const QString &cloudDirectoryPath)

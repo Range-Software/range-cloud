@@ -43,6 +43,8 @@ class Configuration
 
         quint32 rateLimitPerSecond;
         qint64 maxBodySize;
+        quint32 maxConnections;
+        quint32 maxConnectionsPerHost;
 
         QString publicKey;
         QString privateKey;
@@ -94,6 +96,12 @@ class Configuration
 
         qint64 getMaxBodySize() const;
         void setMaxBodySize(qint64 maxBodySize);
+
+        quint32 getMaxConnections() const;
+        void setMaxConnections(quint32 maxConnections);
+
+        quint32 getMaxConnectionsPerHost() const;
+        void setMaxConnectionsPerHost(quint32 maxConnectionsPerHost);
 
         const QString &getPublicKey() const;
         void setPublicKey(const QString &publicKey);
@@ -287,6 +295,12 @@ class Configuration
 
         //! Get default maximum maximum body size accepted by the server.
         static qint64 getDefaultMaxBodySize();
+
+        //! Get default maximum number of simultaneous connections accepted by the server.
+        static quint32 getDefaultMaxConnections();
+
+        //! Get default maximum number of simultaneous connections per host (IP) accepted by the server.
+        static quint32 getDefaultMaxConnectionsPerHost();
 
         //! Get default private key file path.
         static QString getDefaultPrivateKeyPath(const QString &cloudDirectoryPath = Configuration::getDefaultCloudDirectoryPath());

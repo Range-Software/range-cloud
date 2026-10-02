@@ -1,3 +1,24 @@
+## Version 1.2.0
+
+### Improvements
+
+- New configuration settings: `maxConnections` (default 1000) and `maxConnectionsPerHost` (default 20) limit simultaneous connections to the HTTP servers
+- `maxBodySize`, `maxConnections` and `maxConnectionsPerHost` are now applied to both public and private HTTP servers
+- Qt 6.12 is now the minimum required version (CMake 3.25 minimum); CI builds with Qt 6.12.0
+
+### Bug Fixes
+
+- `maxBodySize` default was read from an uninitialized value when not set in the configuration file
+
+### Submodules
+
+- range-ai-lib @ v1.1.0
+- range-base-lib @ v1.1.0
+- range-build-tools @ v1.0.0
+- range-cloud-lib @ v1.1.1
+
+---
+
 ## Version 1.1.0
 
 ### Improvements

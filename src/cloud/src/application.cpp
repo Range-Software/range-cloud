@@ -396,6 +396,9 @@ void Application::onStarted()
                                                              configuration.getPrivateKeyPassword()));
         publicHttpServerSettings.setTlsTrustStore(RTlsTrustStore(configuration.getCaPublicKey()));
         publicHttpServerSettings.setRateLimitPerSecond(configuration.getRateLimitPerSecond());
+        publicHttpServerSettings.setMaxBodySize(configuration.getMaxBodySize());
+        publicHttpServerSettings.setMaxConnections(configuration.getMaxConnections());
+        publicHttpServerSettings.setMaxConnectionsPerHost(configuration.getMaxConnectionsPerHost());
 
         this->publicHttpServer = new RHttpServer(RHttpServer::Public,publicHttpServerSettings);
         this->publicHttpServer->setAuthTokenValidator(this->userManager->getAuthTokenValidator());
@@ -416,6 +419,9 @@ void Application::onStarted()
                                                               configuration.getPrivateKeyPassword()));
         privateHttpServerSettings.setTlsTrustStore(RTlsTrustStore(configuration.getCaPublicKey()));
         privateHttpServerSettings.setRateLimitPerSecond(configuration.getRateLimitPerSecond());
+        privateHttpServerSettings.setMaxBodySize(configuration.getMaxBodySize());
+        privateHttpServerSettings.setMaxConnections(configuration.getMaxConnections());
+        privateHttpServerSettings.setMaxConnectionsPerHost(configuration.getMaxConnectionsPerHost());
 
         this->privateHttpServer = new RHttpServer(RHttpServer::Private,privateHttpServerSettings);
 

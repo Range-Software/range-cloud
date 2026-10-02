@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.25)
 project(RangeCloud)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -18,7 +18,7 @@ endif()
 
 set(BUILD_SHARED_LIBS OFF)
 
-find_package(Qt6 6.10 REQUIRED COMPONENTS Core Concurrent HttpServer Network LinguistTools)
+find_package(Qt6 6.12 REQUIRED COMPONENTS Core Concurrent HttpServer Network LinguistTools)
 qt_standard_project_setup()
 
 add_library(common_defines INTERFACE)
